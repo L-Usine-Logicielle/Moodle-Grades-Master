@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Custom ###
+.DS_Store
+.DS_Store/
