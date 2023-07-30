@@ -1,0 +1,6 @@
+name: test
+portainer:
+  api:
+    url: ${PORTAINER_HOST}
+    password: ${PORTAINER_PASSWORD}
+    username: ${PORTAINER_USERNAME}
