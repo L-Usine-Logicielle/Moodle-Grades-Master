@@ -60,7 +60,7 @@ logs
 .env.*
 !.env.example
 
-.yarn/*
+.yarn/
 !.yarn/cache
 !.yarn/patches
 !.yarn/plugins
