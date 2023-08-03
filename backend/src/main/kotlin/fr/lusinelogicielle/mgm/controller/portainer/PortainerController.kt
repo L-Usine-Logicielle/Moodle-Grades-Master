@@ -2,6 +2,7 @@ package fr.lusinelogicielle.mgm.controller.portainer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.*
+import fr.lusinelogicielle.mgm.controller.mootse.MootseInfo
 import fr.lusinelogicielle.mgm.model.docker.DockerContainer
 import fr.lusinelogicielle.mgm.model.docker.FileContentResponse
 import fr.lusinelogicielle.mgm.model.docker.Stack
@@ -61,55 +62,88 @@ class PortainerController {
         val response = apiService.makeApiRequest(endpointUrl, portainerApiToken)
         val mapper = jacksonObjectMapper()
 
+        var stacks: List<Stack> = mapper.readValue(response.body!!)
+
+        stacks = stacks.filter { it.name.startsWith("mootse-") }
+
+        return ResponseEntity(stacks, HttpStatus.OK)
+    }
+
+    @GetMapping("/stacks/{stackName}")
+    fun getStack(@PathVariable stackName: String): ResponseEntity<MootseInfo>{
+        val portainerApiToken = authService.generateAuthToken(portainerApiUsername, portainerApiPassword)
+        val endpointUrl = "$portainerApiUrl/api/stacks"
+        val response = apiService.makeApiRequest(endpointUrl, portainerApiToken)
+        val mapper = jacksonObjectMapper()
+
         val stacks: List<Stack> = mapper.readValue(response.body!!)
 
+        var stack = stacks.filter { it.name == stackName }.first()
+
+        val endpointStackUrl = "$portainerApiUrl/api/stacks/${stack.id}/file"
+        val jsonResult = apiService.makeApiRequest(endpointStackUrl, portainerApiToken).body!!
         val jsonMapper = ObjectMapper()
+        val fileContentResponse = jsonMapper.readValue(jsonResult, FileContentResponse::class.java)
+        stack.fileContent = fileContentResponse
 
-        for(stack in stacks){
-            val endpointStackUrl = "$portainerApiUrl/api/stacks/${stack.id}/file"
-            val jsonResult = apiService.makeApiRequest(endpointStackUrl, portainerApiToken).body!!
-            val fileContentResponse = jsonMapper.readValue(jsonResult, FileContentResponse::class.java)
-            stack.fileContent = fileContentResponse
-        }
-        for(stack in stacks){
-            if(stack.id == 10) {
-                val yaml = Yaml()
-                val data: Map<*, *> = yaml.load(stack.fileContent?.stackFileContent ?: "")
+        val yaml = Yaml()
+        val data: Map<*, *> = yaml.load(stack.fileContent?.stackFileContent ?: "")
 
-                val services = data["services"] as Map<*, *>
+        val services = data["services"] as Map<*, *>
 
-                val mariadbRegex = Regex("^mootse-mariadb(?:-[a-zA-Z0-9]+)*\$")
-                val runnerRegex = Regex("^mootse-runner(?:-[a-zA-Z0-9]+)*\$")
+        val mariadbRegex = Regex("^mootse-mariadb(?:-[a-zA-Z0-9]+)*\$")
+        val runnerRegex = Regex("^mootse-runner(?:-[a-zA-Z0-9]+)*\$")
 
-                val mariadbService = services.entries.firstOrNull { it.key.toString().matches(mariadbRegex) }?.value as Map<*, *>
+        val mariadbService = services.entries.firstOrNull { it.key.toString().matches(mariadbRegex) }?.value as Map<*, *>
 
-                val networkName = (mariadbService["networks"] as List<*>).first { it.toString().startsWith("mootse-network") } as String
+        val networkName = (mariadbService["networks"] as List<*>).first { it.toString().startsWith("mootse-network") } as String
 
-                val mariaDbName = services.keys.filter { it.toString().matches(mariadbRegex) }.first()
-                val mariaDbContainerName = mariadbService["container_name"] as String
-                val mariaDbImage = mariadbService["image"] as String
-                val mariaDbRestartPolicy = mariadbService["restart"] as String
-                val mariaDbRootPassword = (mariadbService["environment"] as List<*>).first { it.toString().startsWith("MYSQL_ROOT_PASSWORD") } as String
+        val mariaDbName = services.keys.filter { it.toString().matches(mariadbRegex) }.first()
+        val mariaDbContainerName = mariadbService["container_name"] as String
+        val mariaDbImage = mariadbService["image"] as String
+        val mariaDbRestartPolicy = mariadbService["restart"] as String
+        val mariaDbRootPassword = (mariadbService["environment"] as List<*>).first { it.toString().startsWith("MYSQL_ROOT_PASSWORD") } as String
 
-                val runnerService = services.entries.firstOrNull { it.key.toString().matches(runnerRegex) }?.value as Map<*, *>
+        val runnerService = services.entries.firstOrNull { it.key.toString().matches(runnerRegex) }?.value as Map<*, *>
 
-                val runnerName = services.keys.filter { it.toString().matches(runnerRegex) }.first()
-                val runnerContainerName = runnerService["container_name"] as String
-                val runnerImage = runnerService["image"] as String
-                val runnerRestartPolicy = runnerService["restart"] as String
-                val runnerScanInterval = (runnerService["environment"] as List<*>).first { it.toString().startsWith("SCAN_INTERVAL") } as String
-                val runnerMootseUsernamme = (runnerService["environment"] as List<*>).first { it.toString().startsWith("MOOTSE_USERNAME") } as String
-                val runnerMootsePassword = (runnerService["environment"] as List<*>).first { it.toString().startsWith("MOOTSE_PASSWORD") } as String
-                val runnerMailRecipients = (runnerService["environment"] as List<*>).first { it.toString().startsWith("MAIL_RECIPIENTS") } as String
-                val runnerDiscordWebhookUrl = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DISCORD_WEBHOOK_URL") } as String
-                val runnerDbHost = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_HOST") } as String
-                val runnerDbUser = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_USER") } as String
-                val runnerDbPassword = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_PASSWORD") } as String
-                val runnerDbPort = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_PORT") } as String
-                val runnerPromo = (runnerService["environment"] as List<*>).first { it.toString().startsWith("PROMO") } as String
-            }
-        }
-        return ResponseEntity(stacks, HttpStatus.OK)
+        val runnerName = services.keys.filter { it.toString().matches(runnerRegex) }.first()
+        val runnerContainerName = runnerService["container_name"] as String
+        val runnerImage = runnerService["image"] as String
+        val runnerRestartPolicy = runnerService["restart"] as String
+        val runnerScanInterval = (runnerService["environment"] as List<*>).first { it.toString().startsWith("SCAN_INTERVAL") } as String
+        val runnerMootseUsernamme = (runnerService["environment"] as List<*>).first { it.toString().startsWith("MOOTSE_USERNAME") } as String
+        val runnerMootsePassword = (runnerService["environment"] as List<*>).first { it.toString().startsWith("MOOTSE_PASSWORD") } as String
+        val runnerMailRecipients = (runnerService["environment"] as List<*>).first { it.toString().startsWith("MAIL_RECIPIENTS") } as String
+        val runnerDiscordWebhookUrl = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DISCORD_WEBHOOK_URL") } as String
+        val runnerDbHost = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_HOST") } as String
+        val runnerDbUser = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_USER") } as String
+        val runnerDbPassword = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_PASSWORD") } as String
+        val runnerDbPort = (runnerService["environment"] as List<*>).first { it.toString().startsWith("DB_PORT") } as String
+        val runnerPromo = (runnerService["environment"] as List<*>).first { it.toString().startsWith("PROMO") } as String
+
+        val mootseInfo = MootseInfo(
+                networkName,
+                mariaDbName,
+                mariaDbContainerName,
+                mariaDbImage,
+                mariaDbRestartPolicy,
+                mariaDbRootPassword,
+                runnerName,
+                runnerContainerName,
+                runnerImage,
+                runnerRestartPolicy,
+                runnerScanInterval,
+                runnerMootseUsernamme,
+                runnerMootsePassword,
+                runnerMailRecipients,
+                runnerDiscordWebhookUrl,
+                runnerDbHost,
+                runnerDbUser,
+                runnerDbPassword,
+                runnerDbPort,
+                runnerPromo
+        )
+        return ResponseEntity(mootseInfo, HttpStatus.OK)
     }
 
     @GetMapping("/containers/{endpointId}")
@@ -123,5 +157,7 @@ class PortainerController {
 
         return ResponseEntity(containers, HttpStatus.OK)
     }
+
+
 
 }
