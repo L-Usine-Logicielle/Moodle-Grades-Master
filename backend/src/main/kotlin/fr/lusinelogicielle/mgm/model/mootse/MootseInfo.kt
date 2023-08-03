@@ -1,4 +1,4 @@
-package fr.lusinelogicielle.mgm.controller.mootse
+package fr.lusinelogicielle.mgm.model.mootse
 
 data class MootseInfo(
         val networkName: String,

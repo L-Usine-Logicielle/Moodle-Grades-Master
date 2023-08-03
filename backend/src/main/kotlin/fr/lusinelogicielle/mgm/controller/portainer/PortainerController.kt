@@ -2,7 +2,7 @@ package fr.lusinelogicielle.mgm.controller.portainer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.*
-import fr.lusinelogicielle.mgm.controller.mootse.MootseInfo
+import fr.lusinelogicielle.mgm.model.mootse.MootseInfo
 import fr.lusinelogicielle.mgm.model.docker.DockerContainer
 import fr.lusinelogicielle.mgm.model.docker.FileContentResponse
 import fr.lusinelogicielle.mgm.model.docker.Stack
