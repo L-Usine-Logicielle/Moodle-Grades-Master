@@ -9,15 +9,15 @@ data class MootseRunner(
 
         val containerImage: String,
 
-        val url: String = "https://mootse.telecom-st-etienne.fr",
+        var url: String = "https://mootse.telecom-st-etienne.fr",
 
-        val username: String,
+        var username: String = "",
 
-        val password: String,
+        var password: String = "",
 
-        val recipients: String = "",
+        var recipients: String = "",
 
-        val discordWebhookUrl: String = "",
+        var discordWebhookUrl: String = "",
 
-        val scanInterval: Int = 20,
+        var scanInterval: Int = 20,
 )

@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class MootseDatabase(
         val name: String,
 
-        val containerImage: String,
+        var containerImage: String = "",
 
-        val password: String
+        var password: String = ""
 
 )

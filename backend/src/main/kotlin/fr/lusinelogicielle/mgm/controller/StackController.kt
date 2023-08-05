@@ -1,4 +1,4 @@
-package fr.lusinelogicielle.mgm.controller.portainer
+package fr.lusinelogicielle.mgm.controller
 
 import fr.lusinelogicielle.mgm.model.portainer.Stack
 import fr.lusinelogicielle.mgm.service.portainer.stack.StackServiceImpl
@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/stacks")
 class StackController(private val stackService: StackServiceImpl) {
 
-    @GetMapping
-    fun getStacks(): List<Stack> {
-        return stackService.getAllStacks()
-    }
-
     @GetMapping("/{stackId}")
     fun getStack(@PathVariable stackId: Int): Stack {
         return stackService.getStackById(stackId)
+    }
+
+    @GetMapping
+    fun getStacks(): List<Stack> {
+        return stackService.getAllStacks()
     }
 
     @DeleteMapping("/{stackId}")

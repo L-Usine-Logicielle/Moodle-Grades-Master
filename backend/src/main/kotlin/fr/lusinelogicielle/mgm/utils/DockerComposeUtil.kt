@@ -12,19 +12,22 @@ fun forgeDockerComposeFile(
     return """
     version: '2'
     services:
-      ${mootseStack.database.name}:
+      mootse-mariadb:
         container_name: ${mootseStack.database.name}
         image: ${mootseStack.database.containerImage}
         restart: always
         environment:
           - MYSQL_ROOT_PASSWORD=${mootseStack.database.password}
+        healthcheck:
+          test: '/usr/local/bin/healthcheck.sh --su-mysql --connect --innodb_initialized'
         networks:
           - ${mootseStack.network}
-      ${mootseStack.runner.name}:
+      mootse-runner:
         container_name: ${mootseStack.runner.name}
         image: ${mootseStack.runner.containerImage}
         depends_on:
-          - ${mootseStack.database.name}
+          mootse-mariadb:
+            condition: service_healthy
         restart: always
         networks:
           - ${mootseStack.network}
@@ -44,6 +47,8 @@ fun forgeDockerComposeFile(
           - DB_PASSWORD=${mootseStack.database.password}
           - DB_PORT=3306
           - PROMO=dbPromo
+        healthcheck:
+          test: 'python healthcheck.py'
     networks:
       ${mootseStack.network}:
         """.trimIndent()

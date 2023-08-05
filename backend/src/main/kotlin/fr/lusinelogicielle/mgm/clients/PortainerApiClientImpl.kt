@@ -49,7 +49,6 @@ class PortainerApiClientImpl : PortainerApiClient {
                 .header("Content-Type", "application/json")
 
         val request = requestBuilder.build()
-
         val response = try {
             logger.info("${request.method()} : ${request.uri()}")
             httpClient.send(request, HttpResponse.BodyHandlers.ofString())
