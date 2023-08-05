@@ -1,6 +1,5 @@
-package fr.lusinelogicielle.mgm.model.docker
+package fr.lusinelogicielle.mgm.model.portainer
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -17,7 +16,4 @@ data class Stack(
 
         @JsonProperty("EndpointId")
         val endpointId: Int,
-
-        @JsonIgnoreProperties
-        var fileContent: FileContentResponse?
 )
