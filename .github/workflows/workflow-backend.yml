@@ -6,6 +6,9 @@ on:
       - master
       - develop
 
+env:
+  REGISTRY_HOST: ghcr.io
+
 jobs:
   lint:
     name: Klint
