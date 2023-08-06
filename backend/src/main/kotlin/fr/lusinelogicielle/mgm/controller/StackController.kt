@@ -29,5 +29,4 @@ class StackController(private val stackService: StackServiceImpl) {
         stackService.deleteStack(stackId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
-
 }

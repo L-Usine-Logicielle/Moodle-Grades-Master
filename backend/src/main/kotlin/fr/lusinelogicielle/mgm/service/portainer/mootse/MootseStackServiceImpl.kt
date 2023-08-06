@@ -21,7 +21,7 @@ import org.yaml.snakeyaml.Yaml
 private val logger: Logger = LoggerFactory.getLogger(PortainerApiClientImpl::class.java)
 
 @Service
-class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient): MootseStackService {
+class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient) : MootseStackService {
     @Value("\${docker.mail.mailServer}")
     private lateinit var mailServer: String
 
@@ -36,18 +36,18 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
 
     override fun getStackById(stackId: Int): MootseStack {
         val response = portainerApiClient.makeRequest(
-                HttpMethod.GET,
-                "/api/stacks/$stackId/file",
-                null
+            HttpMethod.GET,
+            "/api/stacks/$stackId/file",
+            null,
         )
 
         val jsonResponse = JSONObject(response)
         val content = jsonResponse.getString("StackFileContent")
 
         val stackNameResponse = portainerApiClient.makeRequest(
-                HttpMethod.GET,
-                "/api/stacks/$stackId",
-                null
+            HttpMethod.GET,
+            "/api/stacks/$stackId",
+            null,
         )
         val stackNameJsonResponse = JSONObject(stackNameResponse)
         val stackName = stackNameJsonResponse.getString("Name")
@@ -61,15 +61,15 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
         val databaseName = database.get("container_name") as String
         val databaseImage = database.get("image") as String
         var mootseDatabase = MootseDatabase(
-                name = databaseName,
-                containerImage = databaseImage
+            name = databaseName,
+            containerImage = databaseImage,
         )
         val runner = services.get("mootse-runner") as Map<String, Object>
         val runnerName = runner.get("container_name") as String
         val runnerImage = runner.get("image") as String
         var mootseRunner = MootseRunner(
-                name = runnerName,
-                containerImage = runnerImage,
+            name = runnerName,
+            containerImage = runnerImage,
         )
 
         val runnerEnv = runner["environment"] as List<String>
@@ -90,19 +90,18 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
         val networkName = network.keys.first()
 
         return MootseStack(
-                name = stackName,
-                network = networkName,
-                runner = mootseRunner,
-                database = mootseDatabase
+            name = stackName,
+            network = networkName,
+            runner = mootseRunner,
+            database = mootseDatabase,
         )
-
     }
 
     override fun getAllStacks(): List<MootseStack> {
         val response = portainerApiClient.makeRequest(
-                HttpMethod.GET,
-                "/api/stacks",
-                null
+            HttpMethod.GET,
+            "/api/stacks",
+            null,
         )
         val mapper = jacksonObjectMapper()
 
@@ -111,7 +110,7 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
 
         val mootseStacks = mutableListOf<MootseStack>()
 
-        for(stack in filteredStacks){
+        for (stack in filteredStacks) {
             mootseStacks.add(getStackById(stack.id))
         }
 
@@ -129,9 +128,9 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
         """.trimIndent()
 
         val response = portainerApiClient.makeRequest(
-                HttpMethod.POST,
-                "/api/stacks?type=2&method=string&endpointId=2",
-                jsonData
+            HttpMethod.POST,
+            "/api/stacks?type=2&method=string&endpointId=2",
+            jsonData,
         )
 
         val mapper = jacksonObjectMapper()
@@ -150,14 +149,13 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
         """.trimIndent()
 
         val response = portainerApiClient.makeRequest(
-                HttpMethod.PUT,
-                "/api/stacks/$stackId?endpointId=2",
-                jsonData
+            HttpMethod.PUT,
+            "/api/stacks/$stackId?endpointId=2",
+            jsonData,
         )
 
         val mapper = jacksonObjectMapper()
 
         return mapper.readValue<Stack>(response)
     }
-
 }

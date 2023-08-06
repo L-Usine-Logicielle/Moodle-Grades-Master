@@ -6,9 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 class MgmApplicationTests {
 
-	@Test
-	fun contextLoads() {
-		assert(1 == 1)
-	}
-
+    @Test
+    fun contextLoads() {
+        assert(1 == 1)
+    }
 }

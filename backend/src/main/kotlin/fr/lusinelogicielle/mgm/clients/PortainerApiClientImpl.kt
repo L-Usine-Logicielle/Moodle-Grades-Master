@@ -2,11 +2,9 @@ package fr.lusinelogicielle.mgm.clients
 
 import fr.lusinelogicielle.mgm.exceptions.portainer.PortainerApiException
 import fr.lusinelogicielle.mgm.exceptions.portainer.PortainerAuthenticationException
-import fr.lusinelogicielle.mgm.model.portainer.Stack
 import org.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
@@ -37,16 +35,16 @@ class PortainerApiClientImpl : PortainerApiClient {
     private lateinit var portainerApiPassword: String
 
     override fun makeRequest(
-            method: HttpMethod,
-            path: String,
-            requestBody: String?
+        method: HttpMethod,
+        path: String,
+        requestBody: String?,
     ): String {
         val jwt = login(portainerApiUsername, portainerApiPassword)
         val requestBuilder = HttpRequest.newBuilder()
-                .uri(URI.create("$portainerApiUrl$path"))
-                .header("Authorization", "Bearer $jwt")
-                .method(method.name(), HttpRequest.BodyPublishers.ofString(requestBody ?: ""))
-                .header("Content-Type", "application/json")
+            .uri(URI.create("$portainerApiUrl$path"))
+            .header("Authorization", "Bearer $jwt")
+            .method(method.name(), HttpRequest.BodyPublishers.ofString(requestBody ?: ""))
+            .header("Content-Type", "application/json")
 
         val request = requestBuilder.build()
         val response = try {
@@ -72,10 +70,10 @@ class PortainerApiClientImpl : PortainerApiClient {
         """.trimIndent()
 
         val request = HttpRequest.newBuilder()
-                .uri(URI.create("$portainerApiUrl/api/auth"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(loginData))
-                .build()
+            .uri(URI.create("$portainerApiUrl/api/auth"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(loginData))
+            .build()
 
         val response = try {
             httpClient.send(request, HttpResponse.BodyHandlers.ofString())
@@ -89,25 +87,22 @@ class PortainerApiClientImpl : PortainerApiClient {
         } else {
             throw PortainerAuthenticationException("Unable to authenticate to Portainer API")
         }
-
     }
 
     private fun createUnsecureHttpClient(): HttpClient {
         val trustAllCertificates: Array<TrustManager> = arrayOf(
-                object : X509TrustManager {
-                    override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-                    override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-                    override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
-                }
+            object : X509TrustManager {
+                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+                override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
+            },
         )
 
         val sslContext: SSLContext = SSLContext.getInstance("TLS")
         sslContext.init(null, trustAllCertificates, java.security.SecureRandom())
 
         return HttpClient.newBuilder()
-                .sslContext(sslContext)
-                .build()
+            .sslContext(sslContext)
+            .build()
     }
-
 }
-

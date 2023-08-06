@@ -3,11 +3,11 @@ package fr.lusinelogicielle.mgm.utils
 import fr.lusinelogicielle.mgm.model.mootse.MootseStack
 
 fun forgeDockerComposeFile(
-        mootseStack: MootseStack,
-        mailServer: String,
-        mailPort: String,
-        mailUsername: String,
-        mailPassword: String
+    mootseStack: MootseStack,
+    mailServer: String,
+    mailPort: String,
+    mailUsername: String,
+    mailPassword: String,
 ): String {
     return """
     version: '2'
@@ -51,5 +51,5 @@ fun forgeDockerComposeFile(
           test: 'python healthcheck.py'
     networks:
       ${mootseStack.network}:
-        """.trimIndent()
+    """.trimIndent()
 }

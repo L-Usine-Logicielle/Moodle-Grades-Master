@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Stack(
-        @JsonProperty("Id")
-        val id: Int,
+    @JsonProperty("Id")
+    val id: Int,
 
-        @JsonProperty("Name")
-        val name: String,
+    @JsonProperty("Name")
+    val name: String,
 
-        @JsonProperty("Type")
-        val type: Int,
+    @JsonProperty("Type")
+    val type: Int,
 
-        @JsonProperty("EndpointId")
-        val endpointId: Int,
+    @JsonProperty("EndpointId")
+    val endpointId: Int,
 )
