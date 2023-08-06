@@ -98,11 +98,11 @@ jobs:
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
       with:
-        registry: $REGISTRY_HOST
+        registry: ${REGISTRY_HOST}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push image to registry
       run: |
         cd backend
-        docker push ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
+        docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
