@@ -91,8 +91,11 @@ jobs:
   push_to_registry:
     name: Push to registry
     runs-on: self-hosted
-
+    
     needs: [docker]
+
+    permissions:
+      packages: write
 
     steps:
     - name: Log in to registry
