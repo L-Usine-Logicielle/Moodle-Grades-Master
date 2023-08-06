@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Maven build
     runs-on: self-hosted
 
     steps:
@@ -33,7 +34,10 @@ jobs:
         path: target/*.jar
   
   docker:
+    name: Docker build
     runs-on: self-hosted
+
+    needs: [build]
 
     steps:
     - uses: actions/checkout@v3
