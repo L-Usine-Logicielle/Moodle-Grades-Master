@@ -1,16 +1,35 @@
-name: Maven build
+name: Workflow Backend
 
 on:
-  workflow_run:
-    workflows:
-      - Lint
-    types:
-      - completed
+  push:
+    branches-ignore:
+      - master
+      - develop
 
-env:
-  IMAGE_NAME: "$REGISTRY_HOST/L-Usine-Logicielle/moodle-grades-master_backend:dev"
-  
 jobs:
+  lint:
+    name: Klint
+    runs-on: self-hosted
+    # continue-on-error: true
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Klint
+      run: |
+        cd backend
+        mvn verify -Dmaven.test.skip=true
+
   build:
     name: Maven build
     runs-on: self-hosted
@@ -64,7 +83,7 @@ jobs:
     - name: Create Docker image
       run: |
         cd backend
-        docker build --no-cache -t $IMAGE_NAME .
+        docker build --no-cache -t "$REGISTRY_HOST/L-Usine-Logicielle/moodle-grades-master_backend:dev" .
 
   push_to_registry:
     name: Push to registry
@@ -83,4 +102,4 @@ jobs:
     - name: Push image to registry
       run: |
         cd backend
-        docker push $IMAGE_NAME
+        docker push "$REGISTRY_HOST/L-Usine-Logicielle/moodle-grades-master_backend:dev"
