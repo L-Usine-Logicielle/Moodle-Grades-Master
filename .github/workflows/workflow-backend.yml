@@ -27,6 +27,9 @@ jobs:
 
     - name: Klint
       run: |
+        echo $REGISTRY_HOST
+        echo "$REGISTRY_HOST"
+        echo "$REGISTRY_HOST/L-Usine-Logicielle/moodle-grades-master_backend:dev"
         cd backend
         mvn verify -Dmaven.test.skip=true
 
