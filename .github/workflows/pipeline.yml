@@ -67,7 +67,7 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: moodle-grades-master.jar
-        path: target
+        path: backend/target
 
     - name: Create Docker image
       run: |
