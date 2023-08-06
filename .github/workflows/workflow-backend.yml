@@ -33,11 +33,36 @@ jobs:
         cd backend
         mvn verify
 
+  test:
+    name: Klint
+    runs-on: self-hosted
+    # continue-on-error: true
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: JUnit Tests
+      run: |
+        cd backend
+        mvn test
+
   build:
     name: Maven build
     runs-on: self-hosted
 
-    needs: [lint]
+    needs:
+      - lint
+      - test
 
     steps:
     - name: Checkout
