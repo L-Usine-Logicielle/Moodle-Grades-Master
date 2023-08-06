@@ -51,6 +51,7 @@ jobs:
       run: |
         cd backend
         mvn clean package -Dmaven.test.skip=true
+        ls target/
 
     - run: mkdir -p target/
 
