@@ -2,11 +2,12 @@ name: Maven Verify
 
 on:
   push:
-    branches:
-      - 'front-back-starter'
+    branches-ignore:
+      - master
+      - develop
 
 jobs:
-  build:
+  lint:
     runs-on: self-hosted
 
     steps:
