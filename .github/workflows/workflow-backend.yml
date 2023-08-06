@@ -113,6 +113,19 @@ jobs:
         cd backend
         docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
 
+  scan:
+    name: Scan
+    runs-on: self-hosted
+
+    needs: [build]
+
+    steps:
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_backend:dev
+          annotations: true
+
   push_to_registry:
     name: Push to registry
     runs-on: self-hosted
@@ -135,24 +148,11 @@ jobs:
         cd backend
         docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
-  scan:
-    name: Scan
-    runs-on: self-hosted
-
-    needs: [push_to_registry]
-
-    steps:
-      - name: Scan for vulnerabilities
-        uses: crazy-max/ghaction-container-scan@v2
-        with:
-          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_backend:dev
-          annotations: true
-
   deploy:
     name: Deploy
     runs-on: self-hosted
     
-    needs: [push_to_registry]
+    needs: [scan, push_to_registry]
 
     steps:
     - name: Stop backend
