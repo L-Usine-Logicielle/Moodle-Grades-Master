@@ -1,4 +1,4 @@
-name: Maven Verify
+name: CI/CD Workflow
 
 on:
   push:
@@ -6,6 +6,9 @@ on:
       - master
       - develop
 
+env:
+  IMAGE_NAME: "$REGISTRY_HOST/L-Usine-Logicielle/moodle-grades-master_backend:dev"
+  
 jobs:
   lint:
     name: Klint
@@ -63,7 +66,7 @@ jobs:
         if-no-files-found: error
   
   docker:
-    name: Docker build
+    name: Docker build backend
     runs-on: self-hosted
 
     needs: [build]
@@ -83,4 +86,23 @@ jobs:
     - name: Create Docker image
       run: |
         cd backend
-        docker build --no-cache -t moodle-master:dev .
+        docker build --no-cache -t $IMAGE_NAME .
+
+  push_to_registry:
+    name: Push to registry
+    runs-on: self-hosted
+
+    needs: [docker]
+
+    steps:
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: $REGISTRY_HOST
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image to registry
+      run: |
+        cd backend
+        docker push $IMAGE_NAME
