@@ -58,7 +58,8 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: moodle-grades-master.jar
-        path: target/*.jar
+        path: target/mgm-0.0.1-SNAPSHOT.jar.jar
+        if-no-files-found: error
   
   docker:
     name: Docker build
