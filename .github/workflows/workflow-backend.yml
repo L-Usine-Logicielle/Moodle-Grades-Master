@@ -186,7 +186,7 @@ jobs:
       run: |
         base64 -d <<< "$BACKEND_ENV" > .env
         docker run \
-        --name moodle-grades-master_backend:dev \
+        --name moodle-grades-master_backend-dev \
         -p 8090:8080 \
         --env-file ./.env \
         -d \
