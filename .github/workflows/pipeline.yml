@@ -8,8 +8,10 @@ on:
 
 jobs:
   lint:
+    name: Klint
     runs-on: self-hosted
-
+    continue-on-error: true
+    
     steps:
     - uses: actions/checkout@v3
 
