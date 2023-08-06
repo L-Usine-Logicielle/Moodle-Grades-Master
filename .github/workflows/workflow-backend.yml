@@ -34,7 +34,7 @@ jobs:
         mvn verify
 
   test:
-    name: Klint
+    name: JUnit
     runs-on: self-hosted
     # continue-on-error: true
 
@@ -113,6 +113,19 @@ jobs:
         cd backend
         docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
 
+  scan:
+    name: Scan
+    runs-on: self-hosted
+
+    needs: [build]
+
+    steps:
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_backend:dev
+          annotations: true
+
   push_to_registry:
     name: Push to registry
     runs-on: self-hosted
@@ -126,7 +139,7 @@ jobs:
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
       with:
-        registry: ghcr.io
+        registry: ${{ env.REGISTRY_HOST }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -139,7 +152,7 @@ jobs:
     name: Deploy
     runs-on: self-hosted
     
-    needs: [push_to_registry]
+    needs: [scan, push_to_registry]
 
     steps:
     - name: Stop backend
