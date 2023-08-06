@@ -92,7 +92,7 @@ jobs:
   
   docker_backend:
     name: Docker build backend
-    runs-on: self-hosted
+    runs-on: deploy-env
 
     needs: [build_backend]
 
@@ -115,7 +115,7 @@ jobs:
 
   docker_frontend:
     name: Docker build frontend
-    runs-on: self-hosted
+    runs-on: deploy-env
 
     steps:
     - name: Checkout
@@ -130,7 +130,7 @@ jobs:
 
   scan_backend:
     name: Scan backend
-    runs-on: self-hosted
+    runs-on: deploy-env
 
     needs: [docker_backend]
 
@@ -149,7 +149,7 @@ jobs:
 
   scan_frontend:
     name: Scan frontend
-    runs-on: self-hosted
+    runs-on: deploy-env
 
     needs: [docker_frontend]
 
@@ -168,7 +168,7 @@ jobs:
 
   push_to_registry_backend:
     name: Push to registry backend
-    runs-on: self-hosted
+    runs-on: deploy-env
     
     needs: [docker_backend]
 
@@ -190,7 +190,7 @@ jobs:
 
   push_to_registry_frontend:
     name: Push to registry frontend
-    runs-on: self-hosted
+    runs-on: deploy-env
     
     needs: [docker_frontend]
 
@@ -212,7 +212,7 @@ jobs:
 
   deploy_backend:
     name: Deploy backend
-    runs-on: self-hosted
+    runs-on: deploy-env
     
     needs: [scan_backend, push_to_registry_backend]
 
