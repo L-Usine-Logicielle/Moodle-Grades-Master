@@ -222,8 +222,7 @@ jobs:
         docker stop moodle-grades-master_backend-dev || true && docker rm moodle-grades-master_backend-dev || true
 
     - name: Remove old image
-      run: |
-        docker image rm ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+      run: docker image rm ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -233,8 +232,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Pull new image
-      run: |
-        docker pull ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+      run: docker pull ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
     
     - name: Start backend
       env:
