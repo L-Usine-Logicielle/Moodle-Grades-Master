@@ -31,7 +31,7 @@ jobs:
     - name: Klint
       run: |
         cd backend
-        mvn verify -Dmaven.test.skip=true
+        mvn verify
 
   build:
     name: Maven build
@@ -55,7 +55,7 @@ jobs:
     - name: Build jar
       run: |
         cd backend
-        mvn clean package -Dmaven.test.skip=true
+        mvn clean package
         mkdir -p target/
 
     - name: Upload jar
@@ -134,4 +134,9 @@ jobs:
         BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
       run: |
         base64 -d <<< "$BACKEND_ENV" > .env
-        docker run --name moodle-grades-master_backend:dev -p 8090:8080 --env-file ./.env -d ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+        docker run \
+        --name moodle-grades-master_backend:dev \
+        -p 8090:8080 \
+        --env-file ./.env \
+        -d \
+        ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
