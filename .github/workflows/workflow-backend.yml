@@ -105,4 +105,4 @@ jobs:
     - name: Push image to registry
       run: |
         cd backend
-        docker push "$REGISTRY_HOST/l-usine-logicielle/moodle-grades-master_backend:dev"
+        docker push $(echo "$REGISTRY_HOST/l-usine-logicielle/moodle-grades-master_backend:dev")
