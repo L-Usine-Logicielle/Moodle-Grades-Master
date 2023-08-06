@@ -119,7 +119,7 @@ jobs:
     steps:
     - name: Stop backend
       run: |
-        docker stop moodle-grades-master_backend:dev
+        docker stop moodle-grades-master_backend:dev || true && docker rm moodle-grades-master_backend:dev || true
 
     - name: Remove old image
       run: |
