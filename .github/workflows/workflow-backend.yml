@@ -120,10 +120,16 @@ jobs:
     needs: [docker]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
       - name: Scan for vulnerabilities
         uses: crazy-max/ghaction-container-scan@v2
         with:
           image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_backend:dev
+          dockerfile: ./backend/Dockerfile
           annotations: true
 
   push_to_registry:
@@ -162,6 +168,13 @@ jobs:
     - name: Remove old image
       run: |
         docker image rm ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Pull new image
       run: |
