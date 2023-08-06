@@ -83,7 +83,7 @@ jobs:
     - name: Create Docker image
       run: |
         cd backend
-        docker build --no-cache -t "$REGISTRY_HOST/L-Usine-Logicielle/moodle-grades-master_backend:dev" .
+        docker build --no-cache -t ${REGISTRY_HOST}/L-Usine-Logicielle/moodle-grades-master_backend:dev .
 
   push_to_registry:
     name: Push to registry
@@ -102,4 +102,4 @@ jobs:
     - name: Push image to registry
       run: |
         cd backend
-        docker push "$REGISTRY_HOST/L-Usine-Logicielle/moodle-grades-master_backend:dev"
+        docker push ${REGISTRY_HOST}/L-Usine-Logicielle/moodle-grades-master_backend:dev
