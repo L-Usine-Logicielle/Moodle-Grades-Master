@@ -89,7 +89,7 @@ jobs:
         name: moodle-grades-master.jar
         path: backend/target/*.jar
         if-no-files-found: error
-  
+
   docker_backend:
     name: Docker build backend
     runs-on: deploy-env
