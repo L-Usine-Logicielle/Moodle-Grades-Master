@@ -1,0 +1,247 @@
+name: Workflow CI/CD
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - develop
+
+env:
+  REGISTRY_HOST: ghcr.io
+
+jobs:
+  lint:
+    name: Klint
+    runs-on: self-hosted
+    # continue-on-error: true
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Klint
+      run: |
+        cd backend
+        mvn verify
+
+  test:
+    name: JUnit
+    runs-on: self-hosted
+    # continue-on-error: true
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: JUnit Tests
+      run: |
+        cd backend
+        mvn test
+
+  build_backend:
+    name: Maven build
+    runs-on: self-hosted
+
+    needs:
+      - lint
+      - test
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build jar
+      run: |
+        cd backend
+        mvn clean package
+        mkdir -p target/
+
+    - name: Upload jar
+      uses: actions/upload-artifact@v3
+      with:
+        name: moodle-grades-master.jar
+        path: backend/target/*.jar
+        if-no-files-found: error
+
+  docker_backend:
+    name: Docker build backend
+    runs-on: deploy-env
+
+    needs: [build_backend]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Download jar
+      uses: actions/download-artifact@v3
+      with:
+        name: moodle-grades-master.jar
+        path: backend/target
+
+    - name: Create Docker image
+      run: |
+        cd backend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
+
+  docker_frontend:
+    name: Docker build frontend
+    runs-on: deploy-env
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Create Docker image
+      run: |
+        cd frontend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
+
+  scan_backend:
+    name: Scan backend
+    runs-on: deploy-env
+
+    needs: [docker_backend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_backend:dev
+          dockerfile: ./backend/Dockerfile
+          annotations: true
+
+  scan_frontend:
+    name: Scan frontend
+    runs-on: deploy-env
+
+    needs: [docker_frontend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_frontend:dev
+          dockerfile: ./frontend/Dockerfile
+          annotations: true
+
+  push_to_registry_backend:
+    name: Push to registry backend
+    runs-on: deploy-env
+    
+    needs: [docker_backend]
+
+    permissions:
+      packages: write
+
+    steps:
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image to registry
+      run: |
+        cd backend
+        docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+
+  push_to_registry_frontend:
+    name: Push to registry frontend
+    runs-on: deploy-env
+    
+    needs: [docker_frontend]
+
+    permissions:
+      packages: write
+
+    steps:
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image to registry
+      run: |
+        cd frontend
+        docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev
+
+  deploy_backend:
+    name: Deploy backend
+    runs-on: deploy-env
+    
+    needs: [scan_backend, push_to_registry_backend]
+
+    steps:
+    - name: Stop backend
+      run: |
+        docker stop moodle-grades-master_backend-dev || true && docker rm moodle-grades-master_backend-dev || true
+
+    - name: Remove old image
+      run: docker image rm ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pull new image
+      run: docker pull ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+    
+    - name: Start backend
+      env:
+        BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
+      run: |
+        base64 -d <<< "$BACKEND_ENV" > .env
+        docker run \
+        --name moodle-grades-master_backend-dev \
+        -p 8090:8080 \
+        --env-file ./.env \
+        -d \
+        ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev

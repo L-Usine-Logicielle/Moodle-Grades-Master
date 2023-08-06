@@ -4,3 +4,11 @@ portainer:
     url: ${PORTAINER_HOST}
     password: ${PORTAINER_PASSWORD}
     username: ${PORTAINER_USERNAME}
+docker:
+  mail:
+    mailServer: ${MAIL_SERVER}
+    mailPort: ${MAIL_PORT}
+    mailUsername: ${MAIL_USERNAME}
+    mailPassword: ${MAIL_PASSWORD}
+  mootse:
+    url: ${MOOTSE_URL}
