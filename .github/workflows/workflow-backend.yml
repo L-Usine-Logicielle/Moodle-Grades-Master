@@ -30,7 +30,7 @@ jobs:
 
     - name: Klint
       run: |
-        cd frontend
+        cd backend
         mvn verify
 
   test:
