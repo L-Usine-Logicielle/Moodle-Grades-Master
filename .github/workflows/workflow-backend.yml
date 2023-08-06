@@ -109,3 +109,29 @@ jobs:
       run: |
         cd backend
         docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    
+    needs: [push_to_registry]
+
+    steps:
+    - name: Stop backend
+      run: |
+        docker stop moodle-grades-master_backend:dev
+
+    - name: Remove old image
+      run: |
+        docker image rm ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+
+    - name: Pull new image
+      run: |
+        docker pull ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+    
+    - name: Start backend
+      env:
+        BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
+      run: |
+        base64 -d <<< "$BACKEND_ENV" > .env
+        docker run --name moodle-grades-master_backend:dev -p 8090:8080 --env-file ./.env -d ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
