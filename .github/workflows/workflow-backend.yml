@@ -1,4 +1,4 @@
-name: Workflow Backend
+name: Workflow CI/CD
 
 on:
   push:
@@ -56,7 +56,7 @@ jobs:
         cd backend
         mvn test
 
-  build:
+  build_backend:
     name: Maven build
     runs-on: self-hosted
 
@@ -90,11 +90,11 @@ jobs:
         path: backend/target/*.jar
         if-no-files-found: error
   
-  docker:
+  docker_backend:
     name: Docker build backend
     runs-on: self-hosted
 
-    needs: [build]
+    needs: [build_backend]
 
     steps:
     - name: Checkout
@@ -113,11 +113,26 @@ jobs:
         cd backend
         docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
 
-  scan:
-    name: Scan
+  docker_frontend:
+    name: Docker build frontend
     runs-on: self-hosted
 
-    needs: [docker]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Create Docker image
+      run: |
+        cd frontend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
+
+  scan_backend:
+    name: Scan backend
+    runs-on: self-hosted
+
+    needs: [docker_backend]
 
     steps:
       - name: Checkout
@@ -132,11 +147,30 @@ jobs:
           dockerfile: ./backend/Dockerfile
           annotations: true
 
-  push_to_registry:
-    name: Push to registry
+  scan_frontend:
+    name: Scan frontend
+    runs-on: self-hosted
+
+    needs: [docker_frontend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_frontend:dev
+          dockerfile: ./frontend/Dockerfile
+          annotations: true
+
+  push_to_registry_backend:
+    name: Push to registry backend
     runs-on: self-hosted
     
-    needs: [docker]
+    needs: [docker_backend]
 
     permissions:
       packages: write
@@ -154,11 +188,33 @@ jobs:
         cd backend
         docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
-  deploy:
-    name: Deploy
+  push_to_registry_frontend:
+    name: Push to registry frontend
     runs-on: self-hosted
     
-    needs: [scan, push_to_registry]
+    needs: [docker_frontend]
+
+    permissions:
+      packages: write
+
+    steps:
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image to registry
+      run: |
+        cd frontend
+        docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev
+
+  deploy_backend:
+    name: Deploy backend
+    runs-on: self-hosted
+    
+    needs: [scan_backend, push_to_registry_backend]
 
     steps:
     - name: Stop backend
