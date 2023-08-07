@@ -66,6 +66,7 @@ jobs:
       if: success() || failure()
       with:
         report_paths: 'backend/target/surefire-reports/TEST-*.xml'
+        detailed_summary: true
 
   build_backend:
     name: Maven build
