@@ -11,7 +11,6 @@
                     </p>
                 </div>
             </a>
-
         </div>
         <div class="flex-none">
             <div class="dropdown dropdown-end">
@@ -54,31 +53,6 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            links: [
-                {
-                    label: 'Accueil',
-                    icon: 'fa-solid fa-house',
-                    active: true,
-                },
-                {
-                    label: 'Configuration',
-                    icon: 'fa-solid fa-screwdriver-wrench',
-                    active: false,
-                },
-                {
-                    label: 'Statistiques',
-                    icon: 'fa-solid fa-chart-line',
-                    active: false,
-                },
-            ],
-        }
-    },
-}
-</script>
 <style>
 .router-link-active {
     @apply bg-secondary text-white;
