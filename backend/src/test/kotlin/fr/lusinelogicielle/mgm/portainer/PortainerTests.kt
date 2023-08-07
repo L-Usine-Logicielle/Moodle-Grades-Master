@@ -6,7 +6,9 @@ import fr.lusinelogicielle.mgm.service.portainer.stack.StackServiceImpl
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`mock`
+import org.mockito.Mockito.`verify`
+import org.mockito.Mockito.`when`
 import org.springframework.http.HttpMethod
 
 class PortainerTests {
@@ -26,7 +28,7 @@ class PortainerTests {
         val stack = Stack(stackId, "mootse-test-1", 2, 2)
         val responseJson = "{\"Id\":53,\"Name\":\"mootse-test-1\",\"Type\":2,\"EndpointId\":2}"
         `when`(portainerApiClient.makeRequest(HttpMethod.GET, "/api/stacks/$stackId", null))
-                .thenReturn(responseJson)
+            .thenReturn(responseJson)
 
         // Act
         val result = stackService.getStackById(stackId)
@@ -39,17 +41,18 @@ class PortainerTests {
     fun `test getAllStacks`() {
         // Arrange
         val stacks = listOf(
-                Stack(4, "stack-test", 2, 2),
-                Stack(58, "mootse-test-stack-2", 1, 2),
-                Stack(62, "mootse-test-3", 2, 2),
+            Stack(4, "stack-test", 2, 2),
+            Stack(58, "mootse-test-stack-2", 1, 2),
+            Stack(62, "mootse-test-3", 2, 2),
         )
         val responseJson = """[
             |{"Id":4,"Name":"stack-test","Type":2,"EndpointId":2},
             |{"Id":58,"Name":"mootse-test-stack-2","Type":1,"EndpointId":2},
-            |{"Id":62,"Name":"mootse-test-3","Type":2,"EndpointId":2}]""".trimMargin()
+            |{"Id":62,"Name":"mootse-test-3","Type":2,"EndpointId":2}]
+        """.trimMargin()
 
         `when`(portainerApiClient.makeRequest(HttpMethod.GET, "/api/stacks", null))
-                .thenReturn(responseJson)
+            .thenReturn(responseJson)
 
         // Act
         val result = stackService.getAllStacks()
@@ -69,7 +72,7 @@ class PortainerTests {
         // Assert
         val expectedUrl = "/api/stacks/$stackId?endpointId=2"
         `when`(portainerApiClient.makeRequest(HttpMethod.DELETE, expectedUrl, null))
-                .thenReturn("")
+            .thenReturn("")
 
         // Verify that the method was called with the correct parameters
         `verify`(portainerApiClient).makeRequest(HttpMethod.DELETE, expectedUrl, null)
