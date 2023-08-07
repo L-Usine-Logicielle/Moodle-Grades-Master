@@ -1,6 +1,24 @@
 <template>
-    <div class="flex flex-col py-3 w-full border-opacity-10 bg-primary space-y-3 px-6">
+    <div class="hero bg-base-200 py-6">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-4xl font-bold">Moodle Grades Master</h1>
 
+                <div class="text-desc">Par <span class="text-blue-600 mr-1">L'Usine Logicielle</span>
+                    <i class="fa-solid fa-industry"></i>
+                </div>
+                <p class="py-6">
+                    Une console web de gestion des instances Moodle Grades Master dockerisées
+                </p>
+                <a role="button" class="btn btn-secondary" href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-brands fa-github"></i>
+                    Code source du projet
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col py-3 w-full border-opacity-10 bg-primary space-y-3 px-6">
         <div class="stats shadow">
 
             <div class="stat">
@@ -53,68 +71,91 @@
                 </template>
                 <template v-else>
                     <div class="stat-value">{{ stacksLength }}</div>
+                    <template v-if="healthStatus == 0">
+                        <div class="stat-desc">
+                            <i class="fa-solid fa-check mr-1 text-success"></i>
+                            {{ healthStatus }} stacks en erreur
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="stat-desc">
+                            <i class="fa-solid fa-triangle-exclamation mr-1 text-error"></i>
+                            {{ healthStatus }} stacks en erreur
+                        </div>
+                    </template>
                 </template>
             </div>
 
         </div>
     </div>
-    <div class="flex flex-col py-3 w-full border-opacity-50 space-y-1 px-6">
-        <div class="overflow-x-auto content-right flex items-center justify-center">
-            <template v-if="loading">
-                <span class="loading loading-dots loading-lg"></span>
-            </template>
-            <template v-else>
-                <table class="table table-zebra w-full h-1/2">
-                    <thead>
-                        <tr>
-                            <th>
-                            </th>
-                            <th>Nom</th>
-                            <th>État</th>
-                            <th>Statut</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(container, index) in containers" :key="index">
-                            <template v-if="container.Names[0].startsWith('mootse-', 1)">
-                                <th>
-                                    <button class="btn btn-secondary btn-square btn-md">
-                                        <i class="fa-solid fa-pencil"></i>
-                                    </button>
-                                </th>
-                            </template>
-                            <template v-else>
-                                <th></th>
-                            </template>
-                            <td>
-                                <div class="flex items-center space-x-3">
-                                    <div>
-                                        <div class="font-bold">
-                                            {{ container.Names[0] }}
+    <div class="flex flex-col py-3 w-full border-opacity-50 space-y-1 px-6 bg-base-300 py-4">
+        <div class="collapse collapse-plus bg-base-200">
+            <input type="checkbox" class="peer" />
+            <div class="collapse-title py-4">
+                <i class="fa-brands fa-docker" style="color: #0db7ed;"></i>
+                Afficher les containers
+            </div>
+            <div class="collapse-content">
+                <div class="overflow-x-auto content-right flex items-center justify-center mb-2">
+                    <template v-if="loading">
+                        <span class="loading loading-dots loading-lg"></span>
+                    </template>
+                    <template v-else>
+                        <table class="table bg-neutral table-zebra w-full h-1/2">
+                            <thead>
+                                <tr>
+                                    <th>
+                                    </th>
+                                    <th>Nom</th>
+                                    <th>État</th>
+                                    <th>Statut</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(container, index) in containers" :key="index">
+                                    <template v-if="container.Names[0].startsWith('mootse-', 1)">
+                                        <th>
+                                            <button class="btn btn-secondary btn-square btn-md">
+                                                <i class="fa-solid fa-pencil"></i>
+                                            </button>
+                                        </th>
+                                    </template>
+                                    <template v-else>
+                                        <th></th>
+                                    </template>
+                                    <td>
+                                        <div class="flex items-center space-x-3">
+                                            <div>
+                                                <div class="font-bold">
+                                                    {{ container.Names[0] }}
+                                                </div>
+                                                <div class="text-sm opacity-50"> Test
+                                                    <!-- {{ container.Labels['org.label-schema.description'] }} -->
+                                                </div>
+                                                <template v-if="container.Names[0].startsWith('mootse-', 1)">
+                                                    <br />
+                                                    <span class="badge badge-primary badge-sm">Mootse stack</span>
+                                                </template>
+                                            </div>
                                         </div>
-                                        <div class="text-sm opacity-50">
-                                            {{ container.Labels['org.label-schema.description'] }}
-                                        </div>
-                                        <template v-if="container.Names[0].startsWith('mootse-', 1)">
-                                            <br />
-                                            <span class="badge badge-primary badge-sm">Mootse stack</span>
-                                        </template>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                {{ container.State }}
-                                <br />
-                            </td>
-                            <td>{{ container.Status }}</td>
-                            <th>
-                                <button class="btn btn-xs" @click="showModal(container)">Détails</button>
-                            </th>
-                        </tr>
-                    </tbody>
-                </table>
-            </template>
+                                    </td>
+                                    <td>
+                                        {{ container.State }}
+                                        <br />
+                                    </td>
+                                    <td>{{ container.Status }}</td>
+                                    <th>
+                                        <button class="btn btn-secondary btn-xs"
+                                            @click="showModal(container)">Détails</button>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+                <div class="py-2 my-2"></div>
+            </div>
         </div>
     </div>
 
@@ -153,14 +194,15 @@ export default {
         this.loading = true;
 
         try {
-            const containersData = await $fetch('/api/portainer/containers/2')
+            const containersData = await $fetch('/api/containers')
             this.containers = containersData
         } catch (error) {
             console.error('Error fetching data:', error)
         }
 
         try {
-            const stacksData = await $fetch('/api/portainer/stacks')
+            const stacksData = await $fetch('/api/stacks')
+
             this.stacks = stacksData
         } catch (error) {
             console.error('Error fetching data:', error)
@@ -180,6 +222,12 @@ export default {
                 ? this.containers.filter((obj) => obj.State === 'running').length
                 : 0
         },
+        healthStatus() {
+            return this.containers.filter((obj) => obj.Names[0].startsWith('/mootse') && obj.State === 'running' && obj.Status.endsWith('(healthy)')).length == this.stacks.filter((obj) => obj.Name.startsWith('mootse')).length * 2
+                ? 0
+                : this.stacks.filter((obj) => obj.Name.startsWith('mootse')).length * 2 - this.containers.filter((obj) => obj.Names[0].startsWith('/mootse') && obj.State === 'running' && obj.Status.endsWith('(healthy)')).length
+        }
+
     },
 };
 </script>

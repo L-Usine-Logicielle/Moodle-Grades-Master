@@ -34,12 +34,16 @@ class PortainerApiClientImpl : PortainerApiClient {
     @Value("\${portainer.api.password}")
     private lateinit var portainerApiPassword: String
 
+    private var jwtToken: String? = null
+
     override fun makeRequest(
         method: HttpMethod,
         path: String,
         requestBody: String?,
     ): String {
-        val jwt = login(portainerApiUsername, portainerApiPassword)
+        val jwt = jwtToken ?: login(portainerApiUsername, portainerApiPassword)
+        jwtToken = jwt
+
         val requestBuilder = HttpRequest.newBuilder()
             .uri(URI.create("$portainerApiUrl$path"))
             .header("Authorization", "Bearer $jwt")
@@ -57,6 +61,9 @@ class PortainerApiClientImpl : PortainerApiClient {
         if (response.statusCode() in 200..299) {
             return response.body()
         } else {
+            if (response.statusCode() == 401) {
+                jwtToken = null
+            }
             throw PortainerApiException("API request failed with status code: ${response.statusCode()}")
         }
     }
@@ -69,6 +76,8 @@ class PortainerApiClientImpl : PortainerApiClient {
             }
         """.trimIndent()
 
+        logger.info("Generating JWT...")
+
         val request = HttpRequest.newBuilder()
             .uri(URI.create("$portainerApiUrl/api/auth"))
             .header("Content-Type", "application/json")
@@ -80,9 +89,9 @@ class PortainerApiClientImpl : PortainerApiClient {
         } catch (e: IOException) {
             throw PortainerApiException("Unable to make API request to Portainer : $e")
         }
-
         if (response.statusCode() in 200..299) {
             val jsonResponse = JSONObject(response.body())
+            logger.info("JWT generated")
             return jsonResponse.getString("jwt")
         } else {
             throw PortainerAuthenticationException("Unable to authenticate to Portainer API")
