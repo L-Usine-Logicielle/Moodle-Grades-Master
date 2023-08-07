@@ -243,5 +243,4 @@ jobs:
         --name moodle-grades-master_backend-dev \
         -p 8090:8080 \
         --env-file ./.env \
-        -d \
-        ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+        -d ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
