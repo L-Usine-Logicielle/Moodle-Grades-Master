@@ -77,6 +77,7 @@ class PortainerApiClientImpl : PortainerApiClient {
         """.trimIndent()
 
         logger.info("Generating JWT...")
+
         val request = HttpRequest.newBuilder()
             .uri(URI.create("$portainerApiUrl/api/auth"))
             .header("Content-Type", "application/json")

@@ -68,7 +68,6 @@
               <i class="fa-solid fa-gear mr-1"></i>
               Configuration de la stack
             </h5>
-
             <div class="collapse collapse-plus bg-base-200 my-3">
               <input type="checkbox" class="peer" />
               <div class="collapse-title py-4">
@@ -114,8 +113,6 @@
                 </div>
               </div>
             </div>
-
-
           </template>
 
 
@@ -202,6 +199,7 @@
         <span class="loading loading-dots loading-lg"></span>
       </form>
     </dialog>
+
   </div>
 </template>
 <script>

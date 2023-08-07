@@ -19,8 +19,6 @@
         </div>
     </div>
     <div class="flex flex-col py-3 w-full border-opacity-10 bg-primary space-y-3 px-6">
-
-
         <div class="stats shadow">
 
             <div class="stat">
@@ -159,7 +157,6 @@
                 <div class="py-2 my-2"></div>
             </div>
         </div>
-
     </div>
 
     <input type="checkbox" id="my-modal" class="modal-toggle" />
@@ -205,7 +202,7 @@ export default {
 
         try {
             const stacksData = await $fetch('/api/stacks')
-            console.log(stacksData)
+
             this.stacks = stacksData
         } catch (error) {
             console.error('Error fetching data:', error)
@@ -229,8 +226,8 @@ export default {
             return this.containers.filter((obj) => obj.Names[0].startsWith('/mootse') && obj.State === 'running' && obj.Status.endsWith('(healthy)')).length == this.stacks.filter((obj) => obj.Name.startsWith('mootse')).length * 2
                 ? 0
                 : this.stacks.filter((obj) => obj.Name.startsWith('mootse')).length * 2 - this.containers.filter((obj) => obj.Names[0].startsWith('/mootse') && obj.State === 'running' && obj.Status.endsWith('(healthy)')).length
-
         }
+
     },
 };
 </script>

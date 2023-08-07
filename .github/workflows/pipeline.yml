@@ -37,6 +37,7 @@ jobs:
     name: JUnit
     runs-on: self-hosted
     # continue-on-error: true
+    
     permissions:
       contents: read
       checks: write
