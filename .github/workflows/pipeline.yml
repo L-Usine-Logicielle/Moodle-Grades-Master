@@ -34,15 +34,14 @@ jobs:
         mvn verify
 
   test:
+    name: JUnit
+    runs-on: self-hosted
+    # continue-on-error: true
     permissions:
       contents: read
       checks: write
       id-token: write
-
-    name: JUnit
-    runs-on: self-hosted
-    # continue-on-error: true
-
+      
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -173,7 +172,7 @@ jobs:
       - name: Scan for vulnerabilities
         uses: crazy-max/ghaction-container-scan@v2
         with:
-          image: ${{env.REG ISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_frontend:dev
+          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_frontend:dev
           dockerfile: ./frontend/Dockerfile
           annotations: true
 
