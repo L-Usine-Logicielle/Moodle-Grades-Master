@@ -249,6 +249,7 @@ jobs:
       env:
         BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
       run: |
+        rm .env || true 
         base64 -d <<< "$BACKEND_ENV" > .env
         docker run \
         --name moodle-grades-master_backend-dev \

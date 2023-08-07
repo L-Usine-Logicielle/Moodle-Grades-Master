@@ -3,7 +3,6 @@
         <div class="hero-content text-center">
             <div class="max-w-md">
                 <h1 class="text-4xl font-bold">Moodle Grades Master</h1>
-
                 <div class="text-desc">Par <span class="text-blue-600 mr-1">L'Usine Logicielle</span>
                     <i class="fa-solid fa-industry"></i>
                 </div>
@@ -89,10 +88,10 @@
         </div>
     </div>
     <div class="flex flex-col py-3 w-full border-opacity-50 space-y-1 px-6 bg-base-300 py-4">
-        <div class="collapse collapse-plus bg-base-200">
+        <div class="collapse collapse-plus bg-base-200 mb-4">
             <input type="checkbox" class="peer" />
             <div class="collapse-title py-4">
-                <i class="fa-brands fa-docker" style="color: #0db7ed;"></i>
+                <i class="fa-brands fa-docker mr-1" style="color: #0db7ed;"></i>
                 Afficher les containers
             </div>
             <div class="collapse-content">
@@ -157,6 +156,60 @@
                 <div class="py-2 my-2"></div>
             </div>
         </div>
+        <div class="collapse collapse-plus bg-base-200">
+            <input type="checkbox" class="peer" />
+            <div class="collapse-title py-4">
+                <i class="fa-solid fa-server mr-1" style="color: #0db7ed;"></i>
+                Afficher les stacks
+            </div>
+            <div class="collapse-content">
+                <div class="overflow-x-auto content-right flex items-center justify-center mb-2">
+                    <template v-if="loading">
+                        <span class="loading loading-dots loading-lg"></span>
+                    </template>
+                    <template v-else>
+                        <table class="table bg-neutral table-zebra w-full h-1/2">
+                            <thead>
+                                <tr>
+                                    <th>
+                                    </th>
+                                    <th>Nom</th>
+                                    <th>Réseau</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(mootseStack, index) in mootseStacks" :key="index">
+                                    <th>
+                                        <button class="btn btn-error btn-square btn-md"
+                                            @click="deleteStackOpenModal(mootseStack)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </th>
+                                    <td>
+                                        <div class="flex items-center space-x-3">
+                                            <div>
+                                                <div class="font-bold">
+                                                    {{ mootseStack.name }}
+                                                </div>
+                                                <div class="text-sm opacity-50"> Test
+                                                    <!-- {{ container.Labels['org.label-schema.description'] }} -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ mootseStack.network }}
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+                <div class="py-2 my-2"></div>
+            </div>
+        </div>
+
     </div>
 
     <input type="checkbox" id="my-modal" class="modal-toggle" />
@@ -171,6 +224,43 @@
             </div>
         </div>
     </div>
+
+    <dialog v-if="deleteModalConfirmation" class="modal modal-open" @close="onCloseModalDeleteConfirmation">
+        <form method="dialog" class="modal-box">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                @click="onModalDialogDeleteConfirmation">✕</button>
+            <h3 class="font-bold text-lg">Voulez vous vraiment supprimer cette stack ?</h3>
+            <p class="py-4 text-white">L'opération n'est pas réversible et la stack '{{ stackToDelete[0].Name }}' sera
+                définitivement supprimée</p>
+            <div class="modal-action flex justify-between mt-4">
+                <button class="btn" @click="onModalDialogDeleteConfirmation">Annuler</button>
+                <button class="btn btn-error" @click="deleteStack">Supprimer</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog v-if="successModal" class="modal modal-open" @close="onCloseModalDialog">
+        <form method="dialog" class="modal-box">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="onModalDialog">✕</button>
+            <h3 class="font-bold text-lg text-success">Opération réussie</h3>
+            <p class="py-4 text-white">{{ message }}</p>
+        </form>
+    </dialog>
+
+    <dialog v-if="errorModal" class="modal modal-open" @close="onCloseModalDialog">
+        <form method="dialog" class="modal-box">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="onModalDialog">✕</button>
+            <h3 class="font-bold text-lg text-error">Opération échouée</h3>
+            <p class="py-4 text-white">{{ message }}</p>
+        </form>
+    </dialog>
+
+    <dialog v-if="loadingModal" class="modal modal-open">
+        <form method="dialog" class="modal-box">
+            <h3 class="font-bold text-lg text-warning">Opération en cours...</h3>
+            <span class="loading loading-dots loading-lg"></span>
+        </form>
+    </dialog>
 </template>
 
 <script>
@@ -179,16 +269,73 @@ export default {
         return {
             containers: null,
             stacks: null,
+            mootseStacks: null,
             modalContent: "",
             loading: true,
+            loadingModal: false,
+            successModal: false,
+            errorModal: false,
+            message: "",
+            deleteModalConfirmation: false,
+            stackToDelete: null
         }
     },
     methods: {
+
+        onCloseModalDialog() {
+            this.message = ""
+            this.errorModal = false
+            this.successModal = false
+        },
+
+        onModalDialog() {
+            this.errorModal = false
+            this.successModal = false
+        },
+
         showModal(container) {
             const modal = document.getElementById('my-modal')
             this.modalContent = container.Names[0]
             modal.checked = true
         },
+
+        async deleteStack() {
+            console.log(this.stackToDelete)
+            this.deleteModalConfirmation = false
+            this.loadingModal = true
+
+            try {
+                await $fetch(`/api/stacks/${this.stackToDelete[0].Id}`, {
+                    method: 'DELETE',
+                    headers: {'Access-Control-Allow-Methods': '*'}
+                })
+                this.message = "Stack supprimée !"
+                this.loadingModal = false
+                this.successModal = true
+            } catch (error) {
+                console.error("Unable to delete stack:", error)
+                this.message = `Impossible de supprimer la stack ${this.stackToDelete[0].Name}`
+                this.loadingModal = false
+                this.errorModal = true
+            }
+
+        },
+
+        deleteStackOpenModal(stackToDelete) {
+            const stackIdList = this.stacks.filter((obj) => obj.Name === stackToDelete.name)
+            this.stackToDelete = stackIdList
+            this.deleteModalConfirmation = true
+
+        },
+
+        onCloseModalDeleteConfirmation() {
+            this.stackToDelete = false
+            this.deleteModalConfirmation = false
+        },
+
+        onModalDialogDeleteConfirmation() {
+            this.deleteModalConfirmation = false
+        }
     },
     async beforeMount() {
         this.loading = true;
@@ -196,6 +343,13 @@ export default {
         try {
             const containersData = await $fetch('/api/containers')
             this.containers = containersData
+        } catch (error) {
+            console.error('Error fetching data:', error)
+        }
+
+        try {
+            const mootseStackData = await $fetch('/api/mootse')
+            this.mootseStacks = mootseStackData
         } catch (error) {
             console.error('Error fetching data:', error)
         }
