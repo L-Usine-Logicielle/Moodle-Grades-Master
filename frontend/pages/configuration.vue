@@ -98,6 +98,22 @@
                   <input v-model="stackToEdit.runner[key]" type="text" class="input input-bordered w-full" />
                 </div>
               </div>
+
+            </div>
+            <div class="collapse collapse-plus bg-base-200 my-3">
+              <input type="checkbox" class="peer" />
+              <div class="collapse-title py-4">
+                <i class="fa-solid fa-database"></i>
+                Options de la base de données
+              </div>
+              <div class="collapse-content">
+                <div v-for="(value, key) in stackToEdit.database" :key="key" class="form-control w-full pt-1">
+                  <label class="label">
+                    <span class="label-text">{{ key }}</span>
+                  </label>
+                  <input v-model="stackToEdit.database[key]" type="text" class="input input-bordered w-full" />
+                </div>
+              </div>
             </div>
             <div class="collapse collapse-plus bg-base-200 my-3">
               <input type="checkbox" class="peer" />
@@ -202,6 +218,7 @@
         <span class="loading loading-dots loading-lg"></span>
       </form>
     </dialog>
+
   </div>
 </template>
 <script>
@@ -344,6 +361,7 @@ export default {
         },
       }
     },
+
 
     onEditModalClose() {
       this.selectedStackName = 'Choisir une stack'
