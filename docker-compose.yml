@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  moodle-grades-master-backend:
+    container_name: moodle-grades-master-backend
+    image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
+    environment:
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_SERVER: ${MAIL_SERVER}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MOOTSE_URL: ${MOOTSE_URL}
+      PORTAINER_HOST: ${PORTAINER_HOST}
+      PORTAINER_PASSWORD: ${PORTAINER_PASSWORD}
+      PORTAINER_USERNAME: ${PORTAINER_USERNAME}
+    networks:
+      - moodle-grades-master_network
+
+  moodle-grades-master-frontend:
+    image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:dev
+    ports:
+      - "3000:3000"
+    environment:
+      REWRITE_URL: ${REWRITE_URL}
+    networks:
+      - moodle-grades-master_network
+
+networks:
+   moodle-grades-master_network:
