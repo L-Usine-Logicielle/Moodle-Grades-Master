@@ -21,7 +21,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REWRITE_URL: ${REWRITE_URL}
+      - REWRITE_URL="http://moodle-grades-master-backend:8090"
     networks:
       - moodle-grades-master_network
 
