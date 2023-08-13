@@ -17,6 +17,7 @@ services:
       - moodle-grades-master_network
 
   moodle-grades-master-frontend:
+    container_name: moodle-grades-master-frontend
     image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:dev
     ports:
       - "3000:3000"
