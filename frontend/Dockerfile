@@ -6,6 +6,9 @@ ENV NODE_ENV=production
 
 ENV YARN_VERSION 3.4.1
 
+ARG URL=http://moodle-grades-master-backend:8090
+ENV REWRITE_URL=$URL
+
 ADD . /app
 WORKDIR /app
 

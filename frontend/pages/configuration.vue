@@ -98,7 +98,6 @@
                   <input v-model="stackToEdit.runner[key]" type="text" class="input input-bordered w-full" />
                 </div>
               </div>
-
             </div>
             <div class="collapse collapse-plus bg-base-200 my-3">
               <input type="checkbox" class="peer" />
@@ -115,6 +114,7 @@
                 </div>
               </div>
             </div>
+
             <div class="collapse collapse-plus bg-base-200 my-3">
               <input type="checkbox" class="peer" />
               <div class="collapse-title py-4">
@@ -130,10 +130,7 @@
                 </div>
               </div>
             </div>
-
-
           </template>
-
 
         </template>
         <div class="modal-action">
@@ -218,7 +215,6 @@
         <span class="loading loading-dots loading-lg"></span>
       </form>
     </dialog>
-
   </div>
 </template>
 <script>
@@ -361,7 +357,6 @@ export default {
         },
       }
     },
-
 
     onEditModalClose() {
       this.selectedStackName = 'Choisir une stack'

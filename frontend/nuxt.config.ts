@@ -1,4 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+const REWRITE_URL = process.env.REWRITE_URL || 'http://127.0.0.1:8090'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   pages: true,
@@ -9,7 +12,7 @@ export default defineNuxtConfig({
   ],
   nitro: {
     routeRules: {
-      '/api/**': { proxy: { to: 'http://127.0.0.1:8080/**' } }
+      '/api/**': { proxy: { to: REWRITE_URL + '/**' } }
     }
   }
 })

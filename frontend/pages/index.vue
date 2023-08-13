@@ -200,7 +200,6 @@
                                     <td>
                                         {{ mootseStack.network }}
                                     </td>
-
                                 </tr>
                             </tbody>
                         </table>
@@ -356,7 +355,6 @@ export default {
 
         try {
             const stacksData = await $fetch('/api/stacks')
-
             this.stacks = stacksData
         } catch (error) {
             console.error('Error fetching data:', error)
@@ -381,7 +379,6 @@ export default {
                 ? 0
                 : this.stacks.filter((obj) => obj.Name.startsWith('mootse')).length * 2 - this.containers.filter((obj) => obj.Names[0].startsWith('/mootse') && obj.State === 'running' && obj.Status.endsWith('(healthy)')).length
         }
-
     },
 };
 </script>
