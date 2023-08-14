@@ -1,45 +1,52 @@
 <template>
-  <div class="flex flex-col py-3 w-full border-opacity-10 space-y-3 px-6">
-
-    <div class="flex justify-between">
-      <div class="card w-1/4 bg-blue-700 shadow-xl">
-        <div class="card-body">
-          <h2 class="card-title">Création d'une instance Mootse Runner</h2>
-          <p class="text-xs">Permet de déployer facilement une nouvelle instance Mootse Runner</p>
-          <div class="card-actions justify-end pt-3">
-            <button class="btn btn-primary" onclick="createModal.showModal()">
-              <i class="fa-solid fa-plus"></i>
-              Créer une instance
-            </button>
+  
+  <div class="px-3">
+    <div class="py-3">
+      <div class="card rounded-box w-full mb-2 md:mb-0">
+        <div class="card bg-blue-700 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">Création d'une instance Mootse Runner</h2>
+            <p class="text-xs">Permet de déployer facilement une nouvelle instance Mootse Runner</p>
+            <div class="card-actions justify-end pt-3">
+              <button class="btn btn-primary" onclick="createModal.showModal()">
+                <i class="fa-solid fa-plus"></i>
+                Créer une instance
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <div class="card w-1/4 bg-blue-700 shadow-xl">
-        <div class="card-body">
-          <h2 class="card-title">Modification d'une instance Mootse Runner</h2>
-          <p class="text-xs">Permet d'éditer la configuration d'une instance Mootse Runner</p>
-          <div class="card-actions justify-end pt-3">
-            <button class="btn btn-primary" onclick="editModal.showModal()">
-              <i class="fa-solid fa-pen"></i>
-              Modifier une instance
-            </button>
+      <div class="card rounded-box w-full mb-2 md:mb-0 mt-4">
+        <div class="card bg-blue-700 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">Modification d'une instance Mootse Runner</h2>
+            <p class="text-xs">Permet d'éditer la configuration d'une instance Mootse Runner</p>
+            <div class="card-actions justify-end pt-3">
+              <button class="btn btn-primary" onclick="editModal.showModal()">
+                <i class="fa-solid fa-pen"></i>
+                Modifier une instance
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <div class="card w-1/4 bg-blue-700 shadow-xl">
-        <div class="card-body">
-          <h2 class="card-title">Export d'une instance Mootse Runner</h2>
-          <p class="text-xs">Permet d'exporter la configuration d'une instance Mootse Runner (à venir)</p>
-          <div class="card-actions justify-end pt-3">
-            <button class="btn btn-primary btn-disabled" onclick="createModal.showModal()">
-              <i class="fa-solid fa-download"></i>
-              Exporter une instance
-            </button>
+      <!-- <div class="divider lg:divider-horizontal">OR</div>
+      <div class="grid flex-grow h-32 card rounded-box place-items-center">
+        <div class="card bg-blue-700 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">Export d'une instance Mootse Runner</h2>
+            <p class="text-xs">Permet d'exporter la configuration d'une instance Mootse Runner (à venir)</p>
+            <div class="card-actions justify-end pt-3">
+              <button class="btn btn-primary btn-disabled" onclick="createModal.showModal()">
+                <i class="fa-solid fa-download"></i>
+                Exporter une instance
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
-    <div class="divider"></div>
+
 
     <dialog id="editModal" class="modal modal-bottom" @close="onEditModalClose">
       <form method="dialog" class="modal-box">
