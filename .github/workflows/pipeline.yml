@@ -9,6 +9,8 @@ on:
 env:
   REGISTRY_HOST: ghcr.io
 
+permissions: read-all
+
 jobs:
   lint:
     name: Klint
