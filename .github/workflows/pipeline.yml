@@ -139,8 +139,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push image to registry
-      run: |
-        docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+      run: docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
   docker_frontend:
     name: Docker build frontend
