@@ -6,6 +6,9 @@ on:
       - master
       - develop
 
+permissions:
+  packages: write
+  
 env:
   REGISTRY_HOST: ghcr.io
 
@@ -110,8 +113,6 @@ jobs:
 
     needs: [build_backend]
 
-    # permissions:
-    #   packages: write
 
     steps:
     - name: Checkout
