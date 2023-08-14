@@ -31,7 +31,8 @@ jobs:
     - name: Klint
       run: |
         cd backend
-        mvn verify
+        chmod +x ./mvnw
+        ./mvnw verify
 
   test:
     name: JUnit
@@ -59,7 +60,8 @@ jobs:
     - name: JUnit Tests
       run: |
         cd backend
-        mvn test
+        chmod +x ./mvnw
+        ./mvnw test
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
