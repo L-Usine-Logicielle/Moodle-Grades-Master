@@ -120,7 +120,9 @@ jobs:
         path: backend/target
 
     - name: Create Docker image
-      run: docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
+      run: |
+        cd backend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
 
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -131,7 +133,6 @@ jobs:
 
     - name: Push image to registry
       run: |
-        cd backend
         docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
   docker_frontend:
@@ -148,7 +149,9 @@ jobs:
         ref: ${{ github.ref }}
 
     - name: Create Docker image
-      run: docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
+      run: |
+        cd frontend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
 
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
