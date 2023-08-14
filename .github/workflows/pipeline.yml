@@ -103,7 +103,7 @@ jobs:
 
   docker_backend:
     name: Docker build backend
-    runs-on: deploy-env
+    runs-on: self-hosted
 
     needs: [build_backend]
 
@@ -120,73 +120,8 @@ jobs:
         path: backend/target
 
     - name: Create Docker image
-      run: |
-        cd backend
-        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
+      run: docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev .
 
-  docker_frontend:
-    name: Docker build frontend
-    runs-on: deploy-env
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.ref }}
-
-    - name: Create Docker image
-      run: |
-        cd frontend
-        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
-
-  scan_backend:
-    name: Scan backend
-    runs-on: deploy-env
-
-    needs: [docker_backend]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-
-      - name: Scan for vulnerabilities
-        uses: crazy-max/ghaction-container-scan@v2
-        with:
-          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_backend:dev
-          dockerfile: ./backend/Dockerfile
-          annotations: true
-
-  scan_frontend:
-    name: Scan frontend
-    runs-on: deploy-env
-
-    needs: [docker_frontend]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-
-      - name: Scan for vulnerabilities
-        uses: crazy-max/ghaction-container-scan@v2
-        with:
-          image: ${{env.REGISTRY_HOST}}/l-usine-logicielle/moodle-grades-master_frontend:dev
-          dockerfile: ./frontend/Dockerfile
-          annotations: true
-
-  push_to_registry_backend:
-    name: Push to registry backend
-    runs-on: deploy-env
-    
-    needs: [docker_backend]
-
-    permissions:
-      packages: write
-
-    steps:
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
       with:
@@ -199,16 +134,22 @@ jobs:
         cd backend
         docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
-  push_to_registry_frontend:
-    name: Push to registry frontend
-    runs-on: deploy-env
-    
-    needs: [docker_frontend]
+  docker_frontend:
+    name: Docker build frontend
+    runs-on: self-hosted
 
     permissions:
       packages: write
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Create Docker image
+      run: docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
+
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
       with:
@@ -217,15 +158,65 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push image to registry
-      run: |
-        cd frontend
-        docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev
+      run: docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev
+
+  scan_backend:
+    name: Scan backend
+    runs-on: self-hosted
+
+    needs: [docker_backend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Log in to registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
+          dockerfile: ./backend/Dockerfile
+          annotations: true
+
+  scan_frontend:
+    name: Scan frontend
+    runs-on: self-hosted
+
+    needs: [docker_frontend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Log in to registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:dev
+          dockerfile: ./frontend/Dockerfile
+          annotations: true
 
   deploy:
     name: Deploy
     runs-on: deploy-env
     
-    needs: [scan_backend, push_to_registry_backend, scan_frontend, push_to_registry_frontend]
+    needs: [scan_backend, scan_frontend]
 
     steps:
 
