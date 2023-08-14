@@ -6,9 +6,6 @@ on:
       - master
       - develop
 
-permissions:
-  packages: write
-  
 env:
   REGISTRY_HOST: ghcr.io
 
@@ -111,8 +108,11 @@ jobs:
     name: Docker build backend
     runs-on: self-hosted
 
-    needs: [build_backend]
+    permissions:
+      contents: read
+      packages: write
 
+    needs: [build_backend]
 
     steps:
     - name: Checkout
