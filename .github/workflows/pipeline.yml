@@ -221,19 +221,13 @@ jobs:
         cd frontend
         docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev
 
-  deploy_backend:
-    name: Deploy backend
+  deploy:
+    name: Deploy
     runs-on: deploy-env
     
-    needs: [scan_backend, push_to_registry_backend]
+    needs: [scan_backend, push_to_registry_backend, scan_frontend, push_to_registry_frontend]
 
     steps:
-    - name: Stop backend
-      run: |
-        docker stop moodle-grades-master_backend-dev || true && docker rm moodle-grades-master_backend-dev || true
-
-    - name: Remove old image
-      run: docker image rm ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
     - name: Log in to registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -242,17 +236,23 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Pull new image
-      run: docker pull ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
+    - name: Stop stack
+      run: |
+        docker compose stop
+
+    - name: Remove old images
+      run: docker compose rm -f
+
+    - name: Pull new images
+      run: docker compose pull
     
-    - name: Start backend
+    - name: Start stack
       env:
         BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
       run: |
         rm .env || true 
         base64 -d <<< "$BACKEND_ENV" > .env
-        docker run \
-        --name moodle-grades-master_backend-dev \
-        -p 8090:8080 \
+        docker compose \
         --env-file ./.env \
-        -d ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
+        up --force-recreate \
+        -d
