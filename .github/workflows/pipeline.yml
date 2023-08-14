@@ -225,7 +225,7 @@ jobs:
 
   deploy:
     name: Deploy
-    runs-on: deploy-env
+    runs-on: rec-env
     
     needs: [scan_backend, scan_frontend]
 
