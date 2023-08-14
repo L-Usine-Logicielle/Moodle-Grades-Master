@@ -91,7 +91,8 @@ jobs:
     - name: Build jar
       run: |
         cd backend
-        mvn clean package
+        chmod +x ./mvnw
+        ./mvnw clean package
         mkdir -p target/
 
     - name: Upload jar
