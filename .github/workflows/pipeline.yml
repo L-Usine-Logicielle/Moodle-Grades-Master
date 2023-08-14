@@ -142,117 +142,118 @@ jobs:
       run: |
         docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:dev
 
-  # docker_frontend:
-  #   name: Docker build frontend
-  #   runs-on: self-hosted
+  docker_frontend:
+    name: Docker build frontend
+    runs-on: self-hosted
 
-  #   permissions:
-  #     packages: write
+    permissions:
+      contents: read
+      packages: write
 
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v3
-  #     with:
-  #       ref: ${{ github.ref }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
 
-  #   - name: Create Docker image
-  #     run: |
-  #       cd frontend
-  #       docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
+    - name: Create Docker image
+      run: |
+        cd frontend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev .
 
-  #   - name: Log in to registry
-  #     uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-  #     with:
-  #       registry: ${{ env.REGISTRY_HOST }}
-  #       username: ${{ github.actor }}
-  #       password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-  #   - name: Push image to registry
-  #     run: docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev
+    - name: Push image to registry
+      run: docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:dev
 
-  # scan_backend:
-  #   name: Scan backend
-  #   runs-on: self-hosted
+  scan_backend:
+    name: Scan backend
+    runs-on: self-hosted
 
-  #   needs: [docker_backend]
+    needs: [docker_backend]
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         ref: ${{ github.ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
-  #     - name: Log in to registry
-  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-  #       with:
-  #         registry: ${{ env.REGISTRY_HOST }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Scan for vulnerabilities
-  #       uses: crazy-max/ghaction-container-scan@v2
-  #       with:
-  #         image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
-  #         dockerfile: ./backend/Dockerfile
-  #         annotations: true
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
+          dockerfile: ./backend/Dockerfile
+          annotations: true
 
-  # scan_frontend:
-  #   name: Scan frontend
-  #   runs-on: self-hosted
+  scan_frontend:
+    name: Scan frontend
+    runs-on: self-hosted
 
-  #   needs: [docker_frontend]
+    needs: [docker_frontend]
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         ref: ${{ github.ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
-  #     - name: Log in to registry
-  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-  #       with:
-  #         registry: ${{ env.REGISTRY_HOST }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Scan for vulnerabilities
-  #       uses: crazy-max/ghaction-container-scan@v2
-  #       with:
-  #         image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:dev
-  #         dockerfile: ./frontend/Dockerfile
-  #         annotations: true
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:dev
+          dockerfile: ./frontend/Dockerfile
+          annotations: true
 
-  # deploy:
-    # name: Deploy
-    # runs-on: deploy-env
+  deploy:
+    name: Deploy
+    runs-on: deploy-env
     
-    # needs: [scan_backend, scan_frontend]
+    needs: [scan_backend, scan_frontend]
 
-    # steps:
+    steps:
 
-    # - name: Log in to registry
-    #   uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-    #   with:
-    #     registry: ${{ env.REGISTRY_HOST }}
-    #     username: ${{ github.actor }}
-    #     password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Stop stack
-    #   run: docker compose stop
+    - name: Stop stack
+      run: docker compose stop
 
-    # - name: Remove old images
-    #   run: docker compose rm -f
+    - name: Remove old images
+      run: docker compose rm -f
 
-    # - name: Pull new images
-    #   run: docker compose pull
+    - name: Pull new images
+      run: docker compose pull
     
-    # - name: Start stack
-    #   env:
-    #     BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
-    #   run: |
-    #     rm .env || true 
-    #     base64 -d <<< "$BACKEND_ENV" > .env
-    #     docker compose \
-    #     --env-file ./.env \
-    #     up --force-recreate \
-    #     -d
+    - name: Start stack
+      env:
+        BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
+      run: |
+        rm .env || true 
+        base64 -d <<< "$BACKEND_ENV" > .env
+        docker compose \
+        --env-file ./.env \
+        up --force-recreate \
+        -d
