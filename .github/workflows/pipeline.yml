@@ -237,10 +237,10 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Stop stack
-      run: docker compose stop
+      run: docker compose stop || true 
 
     - name: Remove old images
-      run: docker compose rm -f
+      run: docker compose rm -f || true 
 
     - name: Pull new images
       run: docker compose pull
