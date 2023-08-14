@@ -110,6 +110,9 @@ jobs:
 
     needs: [build_backend]
 
+    permissions:
+      packages: write
+
     steps:
     - name: Checkout
       uses: actions/checkout@v3
