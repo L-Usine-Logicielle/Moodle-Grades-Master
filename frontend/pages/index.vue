@@ -129,9 +129,9 @@
                                                 <div class="font-bold">
                                                     {{ container.Names[0] }}
                                                 </div>
-                                                <div class="text-sm opacity-50"> Test
-                                                    <!-- {{ container.Labels['org.label-schema.description'] }} -->
-                                                </div>
+                                                <!-- <div class="text-sm opacity-50"> Test
+                                                    {{ container.Labels['org.label-schema.description'] }}
+                                                </div> -->
                                                 <template v-if="container.Names[0].startsWith('mootse-', 1)">
                                                     <br />
                                                     <span class="badge badge-primary badge-sm">Mootse stack</span>
@@ -191,9 +191,9 @@
                                                 <div class="font-bold">
                                                     {{ mootseStack.name }}
                                                 </div>
-                                                <div class="text-sm opacity-50"> Test
-                                                    <!-- {{ container.Labels['org.label-schema.description'] }} -->
-                                                </div>
+                                                <!-- <div class="text-sm opacity-50"> Test
+                                                    {{ container.Labels['org.label-schema.description'] }}
+                                                </div> -->
                                             </div>
                                         </div>
                                     </td>
@@ -281,6 +281,31 @@ export default {
     },
     methods: {
 
+        async fetchData() {
+            try {
+                const containersData = await $fetch('/api/containers')
+                this.containers = containersData
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+
+            try {
+                const mootseStackData = await $fetch('/api/mootse')
+                this.mootseStacks = mootseStackData
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+
+            try {
+                const stacksData = await $fetch('/api/stacks')
+                this.stacks = stacksData
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            } finally {
+                this.loading = false;
+            }
+        },
+
         onCloseModalDialog() {
             this.message = ""
             this.errorModal = false
@@ -306,9 +331,10 @@ export default {
             try {
                 await $fetch(`/api/stacks/${this.stackToDelete[0].Id}`, {
                     method: 'DELETE',
-                    headers: {'Access-Control-Allow-Methods': '*'}
+                    headers: { 'Access-Control-Allow-Methods': '*' }
                 })
                 this.message = "Stack supprimée !"
+                this.fetchData()
                 this.loadingModal = false
                 this.successModal = true
             } catch (error) {
@@ -339,28 +365,7 @@ export default {
     async beforeMount() {
         this.loading = true;
 
-        try {
-            const containersData = await $fetch('/api/containers')
-            this.containers = containersData
-        } catch (error) {
-            console.error('Error fetching data:', error)
-        }
-
-        try {
-            const mootseStackData = await $fetch('/api/mootse')
-            this.mootseStacks = mootseStackData
-        } catch (error) {
-            console.error('Error fetching data:', error)
-        }
-
-        try {
-            const stacksData = await $fetch('/api/stacks')
-            this.stacks = stacksData
-        } catch (error) {
-            console.error('Error fetching data:', error)
-        } finally {
-            this.loading = false;
-        }
+        this.fetchData()
     },
     computed: {
         containersLength() {

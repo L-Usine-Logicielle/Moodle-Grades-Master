@@ -248,27 +248,31 @@ export default {
       }
     }
   },
+
   async beforeMount() {
     this.loading = true
-
-    try {
-      const stacksDataNoFiltered = await $fetch('/api/stacks')
-      this.allStacksNoFiltered = stacksDataNoFiltered
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    }
-
-    try {
-      const stacksData = await $fetch('/api/mootse')
-      this.stacks = stacksData
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      this.loading = false
-    }
-
+    await this.fetchData()
   },
+
   methods: {
+    async fetchData() {
+      try {
+        const stacksDataNoFiltered = await $fetch('/api/stacks')
+        this.allStacksNoFiltered = stacksDataNoFiltered
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+
+      try {
+        const stacksData = await $fetch('/api/mootse')
+        this.stacks = stacksData
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
     async editStack() {
       this.loadingModal = true
 
@@ -281,6 +285,7 @@ export default {
           body: this.stackToEdit
         })
         this.message = "Stack mise à jour !"
+        this.fetchData()
         this.loadingModal = false
         this.successModal = true
       } catch (error) {
@@ -289,6 +294,7 @@ export default {
         this.loadingModal = false
         this.errorModal = true
       }
+
     },
 
     async createStack() {
@@ -300,6 +306,7 @@ export default {
           body: this.stack
         })
         this.message = "Stack créée !"
+        this.fetchData()
         this.loadingModal = false
         this.successModal = true
       } catch (error) {
