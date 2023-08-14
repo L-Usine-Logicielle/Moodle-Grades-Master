@@ -9,10 +9,32 @@ on:
 env:
   REGISTRY_HOST: ghcr.io
 
-permissions: read-all
-
 jobs:
   lint:
+    name: Klint
+    runs-on: self-hosted
+    # continue-on-error: true
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Klint
+      run: |
+        cd backend
+        chmod +x ./mvnw
+        ./mvnw verify
+
+  lint2:
     name: Klint
     runs-on: self-hosted
     # continue-on-error: true
