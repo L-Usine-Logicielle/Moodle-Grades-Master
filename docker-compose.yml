@@ -4,6 +4,11 @@ services:
   moodle-grades-master-backend:
     container_name: moodle-grades-master-backend
     image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:${IMAGE_TAG}
+    healthcheck:
+      test: 'wget -q --output-document - http://localhost:8090/actuator/health | grep "UP"'
+      interval: 30s
+      timeout: 10s
+      retries: 5
     environment:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_PORT: ${MAIL_PORT}
@@ -19,6 +24,11 @@ services:
   moodle-grades-master-frontend:
     container_name: moodle-grades-master-frontend
     image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:${IMAGE_TAG}
+    healthcheck:
+      test: 'wget --no-verbose --tries=1 --spider http://localhost:3000'
+      interval: 30s
+      timeout: 10s
+      retries: 5
     ports:
       - "3000:3000"
     environment:
