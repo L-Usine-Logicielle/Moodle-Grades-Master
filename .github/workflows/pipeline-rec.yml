@@ -246,7 +246,7 @@ jobs:
       run: docker compose rm -f || true 
 
     - name: Pull new images
-      run: docker compose pull
+      run: IMAGE_TAG=rec docker compose pull
     
     - name: Start stack
       env:
@@ -254,8 +254,7 @@ jobs:
       run: |
         rm .env || true 
         base64 -d <<< "$BACKEND_ENV" > .env
-        export IMAGE_TAG=rec
-        docker compose \
+        IMAGE_TAG=rec docker compose \
         --env-file ./.env \
         up --force-recreate \
         -d
