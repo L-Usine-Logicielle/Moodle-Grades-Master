@@ -100,57 +100,62 @@
                         <span class="loading loading-dots loading-lg"></span>
                     </template>
                     <template v-else>
-                        <table class="table bg-neutral table-zebra w-full h-1/2">
-                            <thead>
-                                <tr>
-                                    <th>
-                                    </th>
-                                    <th>Nom</th>
-                                    <th>État</th>
-                                    <th>Statut</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(container, index) in containers" :key="index">
-                                    <template v-if="container.Names[0].startsWith('mootse-', 1)">
+                        <template v-if="containers.length > 0">
+                            <table class="table bg-neutral table-zebra w-full h-1/2">
+                                <thead>
+                                    <tr>
                                         <th>
-                                            <button class="btn btn-secondary btn-square btn-md">
-                                                <i class="fa-solid fa-pencil"></i>
-                                            </button>
                                         </th>
-                                    </template>
-                                    <template v-else>
+                                        <th>Nom</th>
+                                        <th>État</th>
+                                        <th>Statut</th>
                                         <th></th>
-                                    </template>
-                                    <td>
-                                        <div class="flex items-center space-x-3">
-                                            <div>
-                                                <div class="font-bold">
-                                                    {{ container.Names[0] }}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(container, index) in containers" :key="index">
+                                        <template v-if="container.Names[0].startsWith('mootse-', 1)">
+                                            <th>
+                                                <button class="btn btn-secondary btn-square btn-md">
+                                                    <i class="fa-solid fa-pencil"></i>
+                                                </button>
+                                            </th>
+                                        </template>
+                                        <template v-else>
+                                            <th></th>
+                                        </template>
+                                        <td>
+                                            <div class="flex items-center space-x-3">
+                                                <div>
+                                                    <div class="font-bold">
+                                                        {{ container.Names[0] }}
+                                                    </div>
+                                                    <!-- <div class="text-sm opacity-50"> Test
+                                                        {{ container.Labels['org.label-schema.description'] }}
+                                                    </div> -->
+                                                    <template v-if="container.Names[0].startsWith('mootse-', 1)">
+                                                        <br />
+                                                        <span class="badge badge-primary badge-sm">Mootse stack</span>
+                                                    </template>
                                                 </div>
-                                                <div class="text-sm opacity-50"> Test
-                                                    <!-- {{ container.Labels['org.label-schema.description'] }} -->
-                                                </div>
-                                                <template v-if="container.Names[0].startsWith('mootse-', 1)">
-                                                    <br />
-                                                    <span class="badge badge-primary badge-sm">Mootse stack</span>
-                                                </template>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {{ container.State }}
-                                        <br />
-                                    </td>
-                                    <td>{{ container.Status }}</td>
-                                    <th>
-                                        <button class="btn btn-secondary btn-xs"
-                                            @click="showModal(container)">Détails</button>
-                                    </th>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        </td>
+                                        <td>
+                                            {{ container.State }}
+                                            <br />
+                                        </td>
+                                        <td>{{ container.Status }}</td>
+                                        <th>
+                                            <button class="btn btn-secondary btn-xs"
+                                                @click="showModal(container)">Détails</button>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </template>
+                        <template v-else>
+                            Pas de données disponibles
+                        </template>
                     </template>
                 </div>
                 <div class="py-2 my-2"></div>
@@ -168,41 +173,46 @@
                         <span class="loading loading-dots loading-lg"></span>
                     </template>
                     <template v-else>
-                        <table class="table bg-neutral table-zebra w-full h-1/2">
-                            <thead>
-                                <tr>
-                                    <th>
-                                    </th>
-                                    <th>Nom</th>
-                                    <th>Réseau</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(mootseStack, index) in mootseStacks" :key="index">
-                                    <th>
-                                        <button class="btn btn-error btn-square btn-md"
-                                            @click="deleteStackOpenModal(mootseStack)">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </th>
-                                    <td>
-                                        <div class="flex items-center space-x-3">
-                                            <div>
-                                                <div class="font-bold">
-                                                    {{ mootseStack.name }}
-                                                </div>
-                                                <div class="text-sm opacity-50"> Test
-                                                    <!-- {{ container.Labels['org.label-schema.description'] }} -->
+                        <template v-if="mootseStacks.length > 0">
+                            <table class="table bg-neutral table-zebra w-full h-1/2">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                        </th>
+                                        <th>Nom</th>
+                                        <th>Réseau</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(mootseStack, index) in mootseStacks" :key="index">
+                                        <th>
+                                            <button class="btn btn-error btn-square btn-md"
+                                                @click="deleteStackOpenModal(mootseStack)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </th>
+                                        <td>
+                                            <div class="flex items-center space-x-3">
+                                                <div>
+                                                    <div class="font-bold">
+                                                        {{ mootseStack.name }}
+                                                    </div>
+                                                    <!-- <div class="text-sm opacity-50"> Test
+                                                        {{ container.Labels['org.label-schema.description'] }}
+                                                    </div> -->
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {{ mootseStack.network }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        </td>
+                                        <td>
+                                            {{ mootseStack.network }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </template>
+                        <template v-else>
+                            Pas de données disponibles
+                        </template>
                     </template>
                 </div>
                 <div class="py-2 my-2"></div>
@@ -281,6 +291,31 @@ export default {
     },
     methods: {
 
+        async fetchData() {
+            try {
+                const containersData = await $fetch('/api/containers')
+                this.containers = containersData
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+
+            try {
+                const mootseStackData = await $fetch('/api/mootse')
+                this.mootseStacks = mootseStackData
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
+
+            try {
+                const stacksData = await $fetch('/api/stacks')
+                this.stacks = stacksData
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            } finally {
+                this.loading = false;
+            }
+        },
+
         onCloseModalDialog() {
             this.message = ""
             this.errorModal = false
@@ -306,9 +341,10 @@ export default {
             try {
                 await $fetch(`/api/stacks/${this.stackToDelete[0].Id}`, {
                     method: 'DELETE',
-                    headers: {'Access-Control-Allow-Methods': '*'}
+                    headers: { 'Access-Control-Allow-Methods': '*' }
                 })
                 this.message = "Stack supprimée !"
+                this.fetchData()
                 this.loadingModal = false
                 this.successModal = true
             } catch (error) {
@@ -339,28 +375,7 @@ export default {
     async beforeMount() {
         this.loading = true;
 
-        try {
-            const containersData = await $fetch('/api/containers')
-            this.containers = containersData
-        } catch (error) {
-            console.error('Error fetching data:', error)
-        }
-
-        try {
-            const mootseStackData = await $fetch('/api/mootse')
-            this.mootseStacks = mootseStackData
-        } catch (error) {
-            console.error('Error fetching data:', error)
-        }
-
-        try {
-            const stacksData = await $fetch('/api/stacks')
-            this.stacks = stacksData
-        } catch (error) {
-            console.error('Error fetching data:', error)
-        } finally {
-            this.loading = false;
-        }
+        this.fetchData()
     },
     computed: {
         containersLength() {

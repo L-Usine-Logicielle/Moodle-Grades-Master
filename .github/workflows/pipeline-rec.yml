@@ -1,0 +1,260 @@
+name: Workflow CI/CD - Recette
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  REGISTRY_HOST: ghcr.io
+
+jobs:
+  lint:
+    name: Klint
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Klint
+      run: |
+        cd backend
+        chmod +x ./mvnw
+        ./mvnw verify
+
+  test:
+    name: JUnit
+    runs-on: self-hosted
+    # continue-on-error: true
+    
+    permissions:
+      contents: read
+      checks: write
+      id-token: write
+      
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: JUnit Tests
+      run: |
+        cd backend
+        chmod +x ./mvnw
+        ./mvnw test
+
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: success() || failure()
+      with:
+        report_paths: 'backend/target/surefire-reports/TEST-*.xml'
+
+  build_backend:
+    name: Maven build
+    runs-on: self-hosted
+
+    needs:
+      - lint
+      - test
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build jar
+      run: |
+        cd backend
+        chmod +x ./mvnw
+        ./mvnw clean package
+        mkdir -p target/
+
+    - name: Upload jar
+      uses: actions/upload-artifact@v3
+      with:
+        name: moodle-grades-master.jar
+        path: backend/target/*.jar
+        if-no-files-found: error
+
+  docker_backend:
+    name: Docker build backend
+    runs-on: self-hosted
+
+    permissions:
+      contents: read
+      packages: write
+
+    needs: [build_backend]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Download jar
+      uses: actions/download-artifact@v3
+      with:
+        name: moodle-grades-master.jar
+        path: backend/target
+
+    - name: Create Docker image
+      run: |
+        cd backend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:rec .
+
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image to registry
+      run: docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_backend:rec
+
+  docker_frontend:
+    name: Docker build frontend
+    runs-on: self-hosted
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Create Docker image
+      run: |
+        cd frontend
+        docker build --no-cache -t ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:rec .
+
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image to registry
+      run: docker push ${REGISTRY_HOST}/l-usine-logicielle/moodle-grades-master_frontend:rec
+
+  scan_backend:
+    name: Scan backend
+    runs-on: self-hosted
+
+    needs: [docker_backend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Log in to registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:rec
+          dockerfile: ./backend/Dockerfile
+          annotations: true
+
+  scan_frontend:
+    name: Scan frontend
+    runs-on: self-hosted
+
+    needs: [docker_frontend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Log in to registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:rec
+          dockerfile: ./frontend/Dockerfile
+          annotations: true
+
+  deploy:
+    name: Deploy
+    runs-on: rec-env
+    
+    needs: [scan_backend, scan_frontend]
+
+    steps:
+    - name: Log in to registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY_HOST }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Stop stack
+      run: docker compose stop || true 
+
+    - name: Remove old images
+      run: docker compose rm -f || true 
+
+    - name: Pull new images
+      run: docker compose pull
+    
+    - name: Start stack
+      env:
+        BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
+      run: |
+        rm .env || true 
+        base64 -d <<< "$BACKEND_ENV" > .env
+        IMAGE_TAG=rec docker compose \
+        --env-file ./.env \
+        up --force-recreate \
+        -d

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   moodle-grades-master-backend:
     container_name: moodle-grades-master-backend
-    image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:dev
+    image: ghcr.io/l-usine-logicielle/moodle-grades-master_backend:${IMAGE_TAG}
     environment:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_PORT: ${MAIL_PORT}
@@ -18,7 +18,7 @@ services:
 
   moodle-grades-master-frontend:
     container_name: moodle-grades-master-frontend
-    image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:dev
+    image: ghcr.io/l-usine-logicielle/moodle-grades-master_frontend:${IMAGE_TAG}
     ports:
       - "3000:3000"
     environment:
