@@ -9,7 +9,7 @@
                 <p class="py-6">
                     Une console web de gestion des instances Moodle Grades Master dockerisées
                 </p>
-                <a role="button" class="btn btn-secondary" href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master"
+                <a role="button" class="btn bg-blue-700 text-white hover:bg-blue-900" href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master"
                     target="_blank" rel="noopener noreferrer">
                     <i class="fa-brands fa-github"></i>
                     Code source du projet
@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="flex flex-col py-3 w-full border-opacity-10 bg-primary space-y-3 px-6">
+    <div class="flex flex-col py-3 w-full border-opacity-10 space-y-3 px-6">
         <div class="stats shadow">
 
             <div class="stat">
@@ -116,7 +116,7 @@
                                     <tr v-for="(container, index) in containers" :key="index">
                                         <template v-if="container.Names[0].startsWith('mootse-', 1)">
                                             <th>
-                                                <button class="btn btn-secondary btn-square btn-md">
+                                                <button class="btn bg-blue-700 btn-square btn-md">
                                                     <i class="fa-solid fa-pencil"></i>
                                                 </button>
                                             </th>
@@ -135,7 +135,7 @@
                                                     </div> -->
                                                     <template v-if="container.Names[0].startsWith('mootse-', 1)">
                                                         <br />
-                                                        <span class="badge badge-primary badge-sm">Mootse stack</span>
+                                                        <span class="badge bg-blue-600 px-4 py-2 text-white badge-sm">Mootse stack</span>
                                                     </template>
                                                 </div>
                                             </div>
@@ -146,7 +146,7 @@
                                         </td>
                                         <td>{{ container.Status }}</td>
                                         <th>
-                                            <button class="btn btn-secondary btn-xs"
+                                            <button class="btn bg-blue-700 btn-xs"
                                                 @click="showModal(container)">Détails</button>
                                         </th>
                                     </tr>

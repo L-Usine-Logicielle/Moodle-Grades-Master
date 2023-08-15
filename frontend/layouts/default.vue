@@ -110,5 +110,5 @@
 </template>
 
 <style>.router-link-active {
-    @apply bg-secondary text-white;
+    @apply bg-blue-700 text-white;
 }</style>
