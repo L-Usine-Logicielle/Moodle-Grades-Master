@@ -3,12 +3,12 @@
   <div class="px-3">
     <div class="py-3">
       <div class="card rounded-box w-full mb-2 md:mb-0">
-        <div class="card bg-blue-700 shadow-xl">
+        <div class="card bg-base-300 shadow-xl">
           <div class="card-body">
             <h2 class="card-title">Création d'une instance Mootse Runner</h2>
             <p class="text-xs">Permet de déployer facilement une nouvelle instance Mootse Runner</p>
             <div class="card-actions justify-end pt-3">
-              <button class="btn btn-primary" onclick="createModal.showModal()">
+              <button class="text-white btn bg-blue-700 hover:bg-blue-900" onclick="createModal.showModal()">
                 <i class="fa-solid fa-plus"></i>
                 Créer une instance
               </button>
@@ -17,12 +17,12 @@
         </div>
       </div>
       <div class="card rounded-box w-full mb-2 md:mb-0 mt-4">
-        <div class="card bg-blue-700 shadow-xl">
+        <div class="card bg-base-300 shadow-xl">
           <div class="card-body">
             <h2 class="card-title">Modification d'une instance Mootse Runner</h2>
             <p class="text-xs">Permet d'éditer la configuration d'une instance Mootse Runner</p>
             <div class="card-actions justify-end pt-3">
-              <button class="btn btn-primary" onclick="editModal.showModal()">
+              <button class="text-white btn bg-blue-700 hover:bg-blue-900" onclick="editModal.showModal()">
                 <i class="fa-solid fa-pen"></i>
                 Modifier une instance
               </button>
