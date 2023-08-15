@@ -254,7 +254,8 @@ jobs:
       run: |
         rm .env || true 
         base64 -d <<< "$BACKEND_ENV" > .env
-        IMAGE_TAG=rec docker compose \
+        export IMAGE_TAG=rec
+        docker compose \
         --env-file ./.env \
         up --force-recreate \
         -d
