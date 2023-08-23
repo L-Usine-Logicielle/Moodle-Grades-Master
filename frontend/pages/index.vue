@@ -1,4 +1,16 @@
 <template>
+    <div class="bg-base-200">
+        <template v-if="refreshingData">
+            <button class="btn btn-square hover:bg-base-250">
+                <span class="loading loading-spinner"></span>
+            </button>
+        </template>
+        <template v-else>
+            <button class="btn btn-square hover:bg-base-250" @click="refreshData">
+                <i class="fa-xl fa-solid fa-arrows-rotate"></i>
+            </button>
+        </template>
+    </div>
     <div class="hero bg-base-200 py-6">
         <div class="hero-content text-center">
             <div class="max-w-md">
@@ -9,8 +21,9 @@
                 <p class="py-6">
                     Une console web de gestion des instances Moodle Grades Master dockerisées
                 </p>
-                <a role="button" class="btn bg-blue-700 text-white hover:bg-blue-900" href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master"
-                    target="_blank" rel="noopener noreferrer">
+                <a role="button" class="btn bg-blue-700 text-white hover:bg-blue-900"
+                    href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master" target="_blank"
+                    rel="noopener noreferrer">
                     <i class="fa-brands fa-github"></i>
                     Code source du projet
                 </a>
@@ -135,7 +148,8 @@
                                                     </div> -->
                                                     <template v-if="container.Names[0].startsWith('mootse-', 1)">
                                                         <br />
-                                                        <span class="badge bg-blue-600 px-4 py-2 text-white badge-sm">Mootse stack</span>
+                                                        <span class="badge bg-blue-600 px-4 py-2 text-white badge-sm">Mootse
+                                                            stack</span>
                                                     </template>
                                                 </div>
                                             </div>
@@ -282,6 +296,7 @@ export default {
             modalContent: "",
             loading: true,
             loadingModal: false,
+            refreshingData: false,
             successModal: false,
             errorModal: false,
             message: "",
@@ -314,6 +329,12 @@ export default {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async refreshData() {
+            this.refreshingData = true
+            await this.fetchData()
+            this.refreshingData = false
         },
 
         onCloseModalDialog() {
