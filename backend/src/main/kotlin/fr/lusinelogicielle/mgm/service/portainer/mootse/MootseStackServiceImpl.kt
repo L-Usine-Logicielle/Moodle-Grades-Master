@@ -113,7 +113,6 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
         for (stack in filteredStacks) {
             mootseStacks.add(getStackById(stack.id))
         }
-
         return mootseStacks.toList()
     }
 
@@ -132,7 +131,6 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
             "/api/stacks?type=2&method=string&endpointId=2",
             jsonData,
         )
-
         val mapper = jacksonObjectMapper()
 
         return mapper.readValue<Stack>(response)
@@ -147,7 +145,6 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
             "stackFileContent": "${dockerCompose.trimMargin().replace("\n", "\\n")}"
         }
         """.trimIndent()
-
         val response = portainerApiClient.makeRequest(
             HttpMethod.PUT,
             "/api/stacks/$stackId?endpointId=2",
@@ -155,7 +152,6 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
         )
 
         val mapper = jacksonObjectMapper()
-
         return mapper.readValue<Stack>(response)
     }
 }
