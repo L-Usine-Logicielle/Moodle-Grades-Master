@@ -1,5 +1,4 @@
 <template>
-  
   <div class="px-3">
     <div class="py-3">
       <div class="card rounded-box w-full mb-2 md:mb-0">
@@ -127,28 +126,41 @@
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom de la stack</span>
-            <span class="label-text-alt">Exemple : moodle-stack</span>
+            <span class="label-text-alt">Exemple : stack-demo</span>
           </label>
-          <input v-model="stack.name" type="text" placeholder="" class="input input-bordered w-full" />
+          <div class="join">
+            <span class="btn join-item rounded-l-full w-1/3">mootse-</span>
+            <input v-model="stack.name" class="input input-bordered join-item w-2/3" type="text" />
+          </div>
         </div>
+
+
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom du runner</span>
-            <span class="label-text-alt">Exemple : mootse-runner-exemple</span>
+            <span class="label-text-alt">Exemple : runner-demo</span>
           </label>
-          <input v-model="stack.runner.name" type="text" class="input input-bordered w-full" />
+          <div class="join">
+            <span class="btn join-item rounded-l-full w-1/3">mootse-</span>
+            <input v-model="stack.runner.name" class="input input-bordered join-item w-2/3" type="text" />
+          </div>
         </div>
+
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom de la base de données</span>
-            <span class="label-text-alt">Exemple : mootse-mariadb-exemple</span>
+            <span class="label-text-alt">Exemple : mariadb-demo</span>
           </label>
-          <input v-model="stack.database.name" type="text" placeholder="" class="input input-bordered w-full" />
+          <div class="join">
+            <span class="btn join-item rounded-l-full w-1/3">mootse-</span>
+            <input v-model="stack.database.name" class="input input-bordered join-item w-2/3" type="text" />
+          </div>
         </div>
+
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom du network Docker</span>
-            <span class="label-text-alt">Exemple : mootse-network-exemple</span>
+            <span class="label-text-alt">Exemple : network-demo</span>
           </label>
           <input v-model="stack.network" type="text" placeholder="" class="input input-bordered w-full" />
         </div>
@@ -291,8 +303,11 @@ export default {
 
     async createStack() {
       this.loadingModal = true
-
+      this.stack.name = "mootse-" + this.stack.name
+      this.stack.runner.name = "mootse-" + this.stack.runner.name
+      this.stack.database.name = "mootse-" + this.stack.database.name
       try {
+
         const reponse = await $fetch('/api/mootse', {
           method: 'POST',
           body: this.stack
