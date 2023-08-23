@@ -382,7 +382,7 @@ export default {
             return this.containers ? this.containers.length : 0
         },
         stacksLength() {
-            return this.stacks ? this.stacks.length : 0
+            return this.stacks ? this.stacks.filter((obj) => obj.Name.startsWith('mootse')).length : 0
         },
         runningCount() {
             return this.containers
