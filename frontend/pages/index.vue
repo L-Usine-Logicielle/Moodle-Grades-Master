@@ -148,8 +148,7 @@
                                                     </div> -->
                                                     <template v-if="container.Names[0].startsWith('mootse-', 1)">
                                                         <br />
-                                                        <span class="badge bg-blue-600 px-4 py-2 text-white badge-sm">Mootse
-                                                            stack</span>
+                                                        <span class="badge bg-blue-600 px-4 py-2 text-white badge-sm">Mootse stack</span>
                                                     </template>
                                                 </div>
                                             </div>
