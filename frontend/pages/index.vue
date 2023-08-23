@@ -64,7 +64,7 @@
                             d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                     </svg>
                 </div>
-                <div class="stat-title">Stacks Mootse Runner</div>
+                <div class="stat-title">Stacks Moodle Runner</div>
                 <template v-if="loading">
                     <span class="loading loading-dots loading-lg"></span>
                 </template>
