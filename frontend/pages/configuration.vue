@@ -1,12 +1,11 @@
 <template>
-  
   <div class="px-3">
     <div class="py-3">
       <div class="card rounded-box w-full mb-2 md:mb-0">
         <div class="card bg-base-300 shadow-xl">
           <div class="card-body">
-            <h2 class="card-title">Création d'une instance Mootse Runner</h2>
-            <p class="text-xs">Permet de déployer facilement une nouvelle instance Mootse Runner</p>
+            <h2 class="card-title">Création d'une instance Moodle Grades Scraper</h2>
+            <p class="text-xs">Permet de déployer facilement une nouvelle instance Moodle Grades Scraper</p>
             <div class="card-actions justify-end pt-3">
               <button class="text-white btn bg-blue-700 hover:bg-blue-900" onclick="createModal.showModal()">
                 <i class="fa-solid fa-plus"></i>
@@ -19,8 +18,8 @@
       <div class="card rounded-box w-full mb-2 md:mb-0 mt-4">
         <div class="card bg-base-300 shadow-xl">
           <div class="card-body">
-            <h2 class="card-title">Modification d'une instance Mootse Runner</h2>
-            <p class="text-xs">Permet d'éditer la configuration d'une instance Mootse Runner</p>
+            <h2 class="card-title">Modification d'une instance Moodle Grades Scraper</h2>
+            <p class="text-xs">Permet d'éditer la configuration d'une instance Moodle Grades Scraper</p>
             <div class="card-actions justify-end pt-3">
               <button class="text-white btn bg-blue-700 hover:bg-blue-900" onclick="editModal.showModal()">
                 <i class="fa-solid fa-pen"></i>
@@ -30,28 +29,13 @@
           </div>
         </div>
       </div>
-      <!-- <div class="divider lg:divider-horizontal">OR</div>
-      <div class="grid flex-grow h-32 card rounded-box place-items-center">
-        <div class="card bg-blue-700 shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title">Export d'une instance Mootse Runner</h2>
-            <p class="text-xs">Permet d'exporter la configuration d'une instance Mootse Runner (à venir)</p>
-            <div class="card-actions justify-end pt-3">
-              <button class="btn btn-primary btn-disabled" onclick="createModal.showModal()">
-                <i class="fa-solid fa-download"></i>
-                Exporter une instance
-              </button>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </div>
 
 
     <dialog id="editModal" class="modal modal-bottom" @close="onEditModalClose">
       <form method="dialog" class="modal-box">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-        <h3 class="font-bold text-lg">Modification d'une instance Mootse Runner</h3>
+        <h3 class="font-bold text-lg">Modification d'une instance Moodle Grades Master</h3>
 
         <div class="form-control w-full content-center pt-2">
           <h5 class="text-primary-content mb-2">
@@ -138,44 +122,57 @@
     <dialog id="createModal" class="modal modal-bottom" @close="onCreateModalClose">
       <form method="dialog" class="modal-box">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-        <h3 class="font-bold text-lg">Création d'une instance Mootse Runner</h3>
+        <h3 class="font-bold text-lg">Création d'une instance Moodle Grades Master</h3>
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom de la stack</span>
-            <span class="label-text-alt">Exemple : moodle-stack</span>
+            <span class="label-text-alt">Exemple : stack-demo</span>
           </label>
-          <input v-model="stack.name" type="text" placeholder="" class="input input-bordered w-full" />
+          <div class="join">
+            <span class="btn join-item rounded-l-full w-1/3">mootse-</span>
+            <input v-model="stack.name" class="input input-bordered join-item w-2/3" type="text" />
+          </div>
         </div>
+
+
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom du runner</span>
-            <span class="label-text-alt">Exemple : mootse-runner-exemple</span>
+            <span class="label-text-alt">Exemple : runner-demo</span>
           </label>
-          <input v-model="stack.runner.name" type="text" class="input input-bordered w-full" />
+          <div class="join">
+            <span class="btn join-item rounded-l-full w-1/3">mootse-</span>
+            <input v-model="stack.runner.name" class="input input-bordered join-item w-2/3" type="text" />
+          </div>
         </div>
+
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom de la base de données</span>
-            <span class="label-text-alt">Exemple : mootse-mariadb-exemple</span>
+            <span class="label-text-alt">Exemple : mariadb-demo</span>
           </label>
-          <input v-model="stack.database.name" type="text" placeholder="" class="input input-bordered w-full" />
+          <div class="join">
+            <span class="btn join-item rounded-l-full w-1/3">mootse-</span>
+            <input v-model="stack.database.name" class="input input-bordered join-item w-2/3" type="text" />
+          </div>
         </div>
+
         <div class="form-control w-full content-center pt-2">
           <label class="label">
             <span class="label-text">Nom du network Docker</span>
-            <span class="label-text-alt">Exemple : mootse-network-exemple</span>
+            <span class="label-text-alt">Exemple : network-demo</span>
           </label>
           <input v-model="stack.network" type="text" placeholder="" class="input input-bordered w-full" />
         </div>
         <div class="form-control w-full content-center pt-2">
           <label class="label">
-            <span class="label-text">Nom d'utilisateur Mootse</span>
+            <span class="label-text">Nom d'utilisateur Moodle</span>
           </label>
           <input v-model="stack.runner.username" type="text" placeholder="" class="input input-bordered w-full" />
         </div>
         <div class="form-control w-full content-center pt-2">
           <label class="label">
-            <span class="label-text">Mot de passe Mootse</span>
+            <span class="label-text">Mot de passe Moodle</span>
           </label>
           <input v-model="stack.runner.password" type="text" placeholder="" class="input input-bordered w-full" />
         </div>
@@ -306,8 +303,11 @@ export default {
 
     async createStack() {
       this.loadingModal = true
-
+      this.stack.name = "mootse-" + this.stack.name
+      this.stack.runner.name = "mootse-" + this.stack.runner.name
+      this.stack.database.name = "mootse-" + this.stack.database.name
       try {
+
         const reponse = await $fetch('/api/mootse', {
           method: 'POST',
           body: this.stack

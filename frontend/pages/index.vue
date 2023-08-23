@@ -1,4 +1,16 @@
 <template>
+    <div class="bg-base-200">
+        <template v-if="refreshingData">
+            <button class="btn btn-square hover:bg-base-250">
+                <span class="loading loading-spinner"></span>
+            </button>
+        </template>
+        <template v-else>
+            <button class="btn btn-square hover:bg-base-250" @click="refreshData">
+                <i class="fa-xl fa-solid fa-arrows-rotate"></i>
+            </button>
+        </template>
+    </div>
     <div class="hero bg-base-200 py-6">
         <div class="hero-content text-center">
             <div class="max-w-md">
@@ -9,8 +21,9 @@
                 <p class="py-6">
                     Une console web de gestion des instances Moodle Grades Master dockerisées
                 </p>
-                <a role="button" class="btn bg-blue-700 text-white hover:bg-blue-900" href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master"
-                    target="_blank" rel="noopener noreferrer">
+                <a role="button" class="btn bg-blue-700 text-white hover:bg-blue-900"
+                    href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master" target="_blank"
+                    rel="noopener noreferrer">
                     <i class="fa-brands fa-github"></i>
                     Code source du projet
                 </a>
@@ -64,7 +77,7 @@
                             d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                     </svg>
                 </div>
-                <div class="stat-title">Stacks Mootse Runner</div>
+                <div class="stat-title">Stacks Moodle Runner</div>
                 <template v-if="loading">
                     <span class="loading loading-dots loading-lg"></span>
                 </template>
@@ -282,6 +295,7 @@ export default {
             modalContent: "",
             loading: true,
             loadingModal: false,
+            refreshingData: false,
             successModal: false,
             errorModal: false,
             message: "",
@@ -314,6 +328,12 @@ export default {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async refreshData() {
+            this.refreshingData = true
+            await this.fetchData()
+            this.refreshingData = false
         },
 
         onCloseModalDialog() {
@@ -382,7 +402,7 @@ export default {
             return this.containers ? this.containers.length : 0
         },
         stacksLength() {
-            return this.stacks ? this.stacks.length : 0
+            return this.stacks ? this.stacks.filter((obj) => obj.Name.startsWith('mootse')).length : 0
         },
         runningCount() {
             return this.containers
