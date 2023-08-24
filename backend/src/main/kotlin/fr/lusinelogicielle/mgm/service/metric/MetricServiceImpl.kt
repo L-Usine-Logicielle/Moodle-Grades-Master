@@ -4,7 +4,10 @@ import MetricRepository
 import fr.lusinelogicielle.mgm.exceptions.metric.MetricException
 import fr.lusinelogicielle.mgm.model.metric.Metric
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class MetricServiceImpl : MetricService {
@@ -21,17 +24,27 @@ class MetricServiceImpl : MetricService {
     }
 
     override fun findByName(name: String): Metric {
-        return metricRepository.findByName(name)
+        try {
+            return metricRepository.findByName(name)
+        } catch (e: EmptyResultDataAccessException) {
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Metric not found",
+            )
+        }
     }
 
     override fun incrementMetric(name: String, increment: Int): Metric {
-        val existingMetric = metricRepository.findByName(name)
-        if (existingMetric != null) {
+        try {
+            val existingMetric = metricRepository.findByName(name)
             existingMetric.value += increment.toBigDecimal()
-            val updatedMetric = metricRepository.save(existingMetric)
-            return updatedMetric
-        } else {
-            throw MetricException("Metric with name $name not found")
+            return metricRepository.save(existingMetric)
+        } catch (e: EmptyResultDataAccessException) {
+            val newMetric = Metric(name = name, value = increment.toBigDecimal())
+            val savedMetric = metricRepository.save(newMetric)
+            return savedMetric
+        } catch (e: Exception) {
+            throw MetricException("Unable to increment or create metric")
         }
     }
 }
