@@ -19,4 +19,6 @@ data class MootseRunner(
     var discordWebhookUrl: String = "",
 
     var scanInterval: Int = 20,
+
+    var mootseMasterUrl: String = "http://10.243.103.188:8090",
 )

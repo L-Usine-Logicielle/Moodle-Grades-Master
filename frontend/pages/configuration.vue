@@ -236,12 +236,13 @@ export default {
         network: "",
         runner: {
           name: "",
-          containerImage: "ghcr.io/lucasperfeito/moodle-grades-scraper:0.0.2",
+          containerImage: "ghcr.io/l-usine-logicielle/moodle-grades-scraper:latest",
           url: "https://mootse.telecom-st-etienne.fr",
           username: "",
           password: "",
           recipients: "",
           discordWebhookUrl: "",
+          mootseMasterUrl: "http://10.243.103.188:8090",
           scanInterval: 120,
         },
         database: {
