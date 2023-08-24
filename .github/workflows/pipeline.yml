@@ -3,7 +3,7 @@ name: Workflow CI/CD - Devel
 on:
   push:
     branches-ignore:
-      - master
+      - main
       - develop
 
 jobs:
