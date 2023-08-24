@@ -9,6 +9,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    ports:
+      - "8090:8090"
     environment:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_PORT: ${MAIL_PORT}
