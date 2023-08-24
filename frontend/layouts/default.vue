@@ -24,6 +24,12 @@
                                 Configuration
                             </NuxtLink>
                         </li>
+                        <li>
+                            <NuxtLink to="/configuration" class="rounded-full">
+                                <i class="fa-solid fa-chart-pie"></i>
+                                Statistiques
+                            </NuxtLink>
+                        </li>
                     </ul>
                 </div>
                 <a class="btn btn-ghost normal-case text-xl">
@@ -49,6 +55,12 @@
                         <NuxtLink to="/configuration" class="rounded-full">
                             <i class="fa-solid fa-screwdriver-wrench"></i>
                             Configuration
+                        </NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink to="/stats" class="rounded-full">
+                                <i class="fa-solid fa-chart-pie"></i>
+                                Statistiques
                         </NuxtLink>
                     </li>
                 </ul>
