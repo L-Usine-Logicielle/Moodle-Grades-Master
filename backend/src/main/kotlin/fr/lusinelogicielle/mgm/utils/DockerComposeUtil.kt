@@ -47,6 +47,7 @@ fun forgeDockerComposeFile(
           - DB_PASSWORD=${mootseStack.database.password}
           - DB_PORT=3306
           - PROMO=dbPromo
+          - MOOTSE_MASTER_URL=${mootseStack.runner.mootseMasterUrl}
         healthcheck:
           test: 'python healthcheck.py'
     networks:

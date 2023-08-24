@@ -83,6 +83,7 @@ class MootseStackServiceImpl(private val portainerApiClient: PortainerApiClient)
                 "MAIL_RECIPIENTS" -> mootseRunner.recipients = value
                 "DISCORD_WEBHOOK_URL" -> mootseRunner.discordWebhookUrl = value
                 "DB_PASSWORD" -> mootseDatabase.password = value
+                "MOOTSE_MASTER_URL" -> mootseRunner.mootseMasterUrl = value
             }
         }
 

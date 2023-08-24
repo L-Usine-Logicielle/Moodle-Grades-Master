@@ -125,6 +125,7 @@ class UtilsTests {
               - DB_PASSWORD=mypass
               - DB_PORT=3306
               - PROMO=dbPromo
+              - MOOTSE_MASTER_URL=http://10.243.103.188:8090
             healthcheck:
               test: 'python healthcheck.py'
         networks:
