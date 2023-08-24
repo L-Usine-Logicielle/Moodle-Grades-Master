@@ -19,7 +19,7 @@
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <p class="py-6">
-                    Une console web de gestion des instances Moodle Grades Master dockerisées
+                    Une console web de gestion des instances Moodle Grades Scraper dockerisées
                 </p>
                 <a role="button" class="btn bg-blue-700 text-white hover:bg-blue-900"
                     href="https://github.com/L-Usine-Logicielle/Moodle-Grades-Master" target="_blank"
