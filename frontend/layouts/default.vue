@@ -25,7 +25,7 @@
                             </NuxtLink>
                         </li>
                         <li>
-                            <NuxtLink to="/configuration" class="rounded-full">
+                            <NuxtLink to="/stats" class="rounded-full">
                                 <i class="fa-solid fa-chart-pie"></i>
                                 Statistiques
                             </NuxtLink>
