@@ -41,8 +41,7 @@ class MetricServiceImpl : MetricService {
             return metricRepository.save(existingMetric)
         } catch (e: EmptyResultDataAccessException) {
             val newMetric = Metric(name = name, value = increment.toBigDecimal())
-            val savedMetric = metricRepository.save(newMetric)
-            return savedMetric
+            return metricRepository.save(newMetric)
         } catch (e: Exception) {
             throw MetricException("Unable to increment or create metric")
         }

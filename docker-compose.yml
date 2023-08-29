@@ -22,6 +22,8 @@ services:
       PORTAINER_USERNAME: ${PORTAINER_USERNAME}
     networks:
       - moodle-grades-master_network
+    volumes:
+      - moodle-master-data:/data
 
   moodle-grades-master-frontend:
     container_name: moodle-grades-master-frontend
@@ -40,3 +42,5 @@ services:
 
 networks:
    moodle-grades-master_network:
+volumes:
+  moodle-master-data:
