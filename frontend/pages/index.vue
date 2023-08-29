@@ -32,7 +32,6 @@
     </div>
     <div class="flex flex-col py-3 w-full border-opacity-10 space-y-3 px-6">
         <div class="stats shadow">
-
             <div class="stat">
                 <div class="stat-figure text-secondary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -117,39 +116,25 @@
                             <table class="table bg-neutral table-zebra w-full h-1/2">
                                 <thead>
                                     <tr>
-                                        <th>
-                                        </th>
                                         <th>Nom</th>
                                         <th>État</th>
                                         <th>Statut</th>
-                                        <th></th>
+                                        <th>Tags<i class="fa-solid fa-tags ml-2"></i></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(container, index) in containers" :key="index">
-                                        <template v-if="container.Names[0].startsWith('mootse-', 1)">
-                                            <th>
-                                                <button class="btn bg-blue-700 btn-square btn-md">
-                                                    <i class="fa-solid fa-pencil"></i>
-                                                </button>
-                                            </th>
-                                        </template>
-                                        <template v-else>
-                                            <th></th>
-                                        </template>
                                         <td>
                                             <div class="flex items-center space-x-3">
                                                 <div>
                                                     <div class="font-bold">
                                                         {{ container.Names[0] }}
                                                     </div>
-                                                    <!-- <div class="text-sm opacity-50"> Test
-                                                        {{ container.Labels['org.label-schema.description'] }}
-                                                    </div> -->
-                                                    <template v-if="container.Names[0].startsWith('mootse-', 1)">
+                                                    <!-- <template v-if="container.Names[0].startsWith('mootse-', 1)">
                                                         <br />
-                                                        <span class="badge bg-blue-600 px-4 py-2 text-white badge-sm">Mootse stack</span>
-                                                    </template>
+                                                        <span class="badge bg-blue-600 px-4 py-2 text-white badge-sm">Mootse
+                                                            stack</span>
+                                                    </template> -->
                                                 </div>
                                             </div>
                                         </td>
@@ -190,18 +175,27 @@
                             <table class="table bg-neutral table-zebra w-full h-1/2">
                                 <thead>
                                     <tr>
-                                        <th>
-                                        </th>
+                                        <th>Actions</th>
                                         <th>Nom</th>
                                         <th>Réseau</th>
+                                        <th>Interval de scan</th>
+                                        <th>Export des métriques</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(mootseStack, index) in mootseStacks" :key="index">
                                         <th>
-                                            <button class="btn btn-error btn-square btn-md"
+                                            <button class="btn btn-error btn-square btn-md mr-2"
                                                 @click="deleteStackOpenModal(mootseStack)">
                                                 <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                            <button class="btn btn-info btn-square btn-md mr-2"
+                                                @click="startStackOpenModal(mootseStack)">
+                                                <i class="fa-solid fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-warning btn-square btn-md"
+                                                @click="stopStackOpenModal(mootseStack)">
+                                                <i class="fa-solid fa-stop"></i>
                                             </button>
                                         </th>
                                         <td>
@@ -218,6 +212,15 @@
                                         </td>
                                         <td>
                                             {{ mootseStack.network }}
+                                        </td>
+                                        <td>
+                                            {{ mootseStack.runner.scanInterval }} secondes
+                                        </td>
+                                        <td v-if="mootseStack.runner.mootseMasterUrl !== ''">
+                                            Activé <i class="fa-solid fa-check" style="color: #58d07c;"></i>
+                                        </td>
+                                        <td v-else>
+                                            Désactivé <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -261,6 +264,36 @@
         </form>
     </dialog>
 
+    <dialog v-if="startModalConfirmation" class="modal modal-open" @close="onCloseModalstartConfirmation">
+        <form method="dialog" class="modal-box">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                @click="onModalDialogStartConfirmation">✕</button>
+            <h3 class="font-bold text-lg">Voulez vous vraiment démarrer cette stack ?</h3>
+            <p class="py-4 text-white">La stack '{{ stackToStart[0].Name }}' sera
+                démarrée après confirmation </p>
+            <div class="modal-action flex justify-between mt-4">
+                <button class="btn" @click="onModalDialogStartConfirmation">Annuler</button>
+                <button class="btn btn-info" @click="startStack">Démarrer</button>
+                <!-- <button class="btn btn-error" @click="pauseStack">Supprimer</button> -->
+            </div>
+        </form>
+    </dialog>
+
+    <dialog v-if="stopModalConfirmation" class="modal modal-open" @close="onCloseModalstopConfirmation">
+        <form method="dialog" class="modal-box">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                @click="onModalDialogStopConfirmation">✕</button>
+            <h3 class="font-bold text-lg">Voulez vous vraiment stopper cette stack ?</h3>
+            <p class="py-4 text-white">La stack '{{ stackToStop[0].Name }}' sera
+                stoppée après confirmation </p>
+            <div class="modal-action flex justify-between mt-4">
+                <button class="btn" @click="onModalDialogStopConfirmation">Annuler</button>
+                <button class="btn btn-warning" @click="stopStack">Stopper</button>
+                <!-- <button class="btn btn-error" @click="pauseStack">Supprimer</button> -->
+            </div>
+        </form>
+    </dialog>
+
     <dialog v-if="successModal" class="modal modal-open" @close="onCloseModalDialog">
         <form method="dialog" class="modal-box">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="onModalDialog">✕</button>
@@ -300,7 +333,11 @@ export default {
             errorModal: false,
             message: "",
             deleteModalConfirmation: false,
-            stackToDelete: null
+            startModalConfirmation: false,
+            stopModalConfirmation: false,
+            stackToDelete: null,
+            stackToStop: null,
+            stackToStart: null
         }
     },
     methods: {
@@ -354,7 +391,6 @@ export default {
         },
 
         async deleteStack() {
-            console.log(this.stackToDelete)
             this.deleteModalConfirmation = false
             this.loadingModal = true
 
@@ -380,7 +416,6 @@ export default {
             const stackIdList = this.stacks.filter((obj) => obj.Name === stackToDelete.name)
             this.stackToDelete = stackIdList
             this.deleteModalConfirmation = true
-
         },
 
         onCloseModalDeleteConfirmation() {
@@ -390,6 +425,77 @@ export default {
 
         onModalDialogDeleteConfirmation() {
             this.deleteModalConfirmation = false
+        },
+
+        onCloseModalStartConfirmation() {
+            this.stackToDelete = false
+            this.startModalConfirmation = false
+        },
+
+        startStackOpenModal(stackToStart) {
+            const stackIdList = this.stacks.filter((obj) => obj.Name === stackToStart.name)
+            this.stackToStart = stackIdList
+            this.startModalConfirmation = true
+        },
+
+        onModalDialogStartConfirmation() {
+            this.startModalConfirmation = false
+        },
+
+        async startStack() {
+            this.startModalConfirmation = false
+            this.loadingModal = true
+
+            try {
+                await $fetch(`/api/stacks/start/${this.stackToStart[0].Id}`, {
+                    method: 'POST',
+                })
+                this.message = "Stack démarrée !"
+                this.fetchData()
+                this.loadingModal = false
+                this.successModal = true
+            } catch (error) {
+                console.error("Unable to start stack:", error)
+                this.message = `Impossible de démarrer la stack ${this.stackToStart[0].Name}`
+                this.loadingModal = false
+                this.errorModal = true
+            }
+
+        },
+
+        onCloseModalStopConfirmation() {
+            this.stackToDelete = false
+            this.stopModalConfirmation = false
+        },
+
+        stopStackOpenModal(stackToStop) {
+            const stackIdList = this.stacks.filter((obj) => obj.Name === stackToStop.name)
+            this.stackToStop = stackIdList
+            this.stopModalConfirmation = true
+        },
+
+        onModalDialogStopConfirmation() {
+            this.stopModalConfirmation = false
+        },
+
+        async stopStack() {
+            this.stopModalConfirmation = false
+            this.loadingModal = true
+
+            try {
+                await $fetch(`/api/stacks/stop/${this.stackToStop[0].Id}`, {
+                    method: 'POST',
+                })
+                this.message = "Stack stoppée !"
+                this.fetchData()
+                this.loadingModal = false
+                this.successModal = true
+            } catch (error) {
+                console.error("Unable to stop stack:", error)
+                this.message = `Impossible de stopper la stack ${this.stackToStart[0].Name}`
+                this.loadingModal = false
+                this.errorModal = true
+            }
         }
     },
     async beforeMount() {

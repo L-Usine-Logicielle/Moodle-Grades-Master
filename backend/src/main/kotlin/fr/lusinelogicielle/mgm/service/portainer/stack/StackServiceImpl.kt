@@ -42,4 +42,20 @@ class StackServiceImpl(private val portainerApiClient: PortainerApiClient) : Sta
             null,
         )
     }
+
+    override fun stopStack(stackId: Int) {
+        portainerApiClient.makeRequest(
+            HttpMethod.POST,
+            "/api/stacks/$stackId/stop?endpointId=2",
+            null,
+        )
+    }
+
+    override fun startStack(stackId: Int) {
+        portainerApiClient.makeRequest(
+            HttpMethod.POST,
+            "/api/stacks/$stackId/start?endpointId=2",
+            null,
+        )
+    }
 }
