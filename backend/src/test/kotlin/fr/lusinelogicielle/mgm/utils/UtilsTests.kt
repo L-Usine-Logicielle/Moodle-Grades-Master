@@ -103,6 +103,7 @@ class UtilsTests {
           mootse-runner:
             container_name: mootse-runner-stack-test2
             image: ghcr.io/repo/moodle-grades-scraper:0.0.2
+            hostname: mootse-runner-stack-test2
             depends_on:
               mootse-mariadb:
                 condition: service_healthy
