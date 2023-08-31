@@ -25,6 +25,7 @@ fun forgeDockerComposeFile(
       mootse-runner:
         container_name: ${mootseStack.runner.name}
         image: ${mootseStack.runner.containerImage}
+        hostname: ${mootseStack.runner.name}
         depends_on:
           mootse-mariadb:
             condition: service_healthy
