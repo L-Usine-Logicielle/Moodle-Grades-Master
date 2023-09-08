@@ -178,7 +178,7 @@
                                         <th>Actions</th>
                                         <th>Nom</th>
                                         <th>Réseau</th>
-                                        <th>Interval de scan</th>
+                                        <th>Intervalle de scan</th>
                                         <th>Export des métriques</th>
                                     </tr>
                                 </thead>
