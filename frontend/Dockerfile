@@ -13,7 +13,7 @@ ADD . /app
 WORKDIR /app
 
 RUN yarn policies set-version $YARN_VERSION \
-    && yarn install
+    && yarn install --ignore-engines
 
 # Build
 FROM base as build
