@@ -12,8 +12,10 @@ ENV REWRITE_URL=$URL
 ADD . /app
 WORKDIR /app
 
-RUN yarn policies set-version $YARN_VERSION \
-    && yarn install
+RUN yarn policies set-version $YARN_VERSION 
+RUN yarn install
+# RUN yarn policies set-version $YARN_VERSION \
+#     && yarn install --ignore-engines
 
 # Build
 FROM base as build
