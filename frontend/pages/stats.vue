@@ -45,7 +45,7 @@
         <input type="checkbox" />
         <div class="collapse-title text-xl text-center font-medium">
           <i class="fa-solid fa-gauge-high mr-2"></i>
-          Afficher les métriques de {{ key }}
+          Métriques de {{ key }}
         </div>
         <div class="collapse-content">
           <div v-for="obj in value" :key="obj.id">
