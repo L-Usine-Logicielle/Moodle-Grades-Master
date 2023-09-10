@@ -1,10 +1,10 @@
 # Set up
-FROM node:alpine3.17 as base
+FROM alpine:3.18 as base
 
 ARG PORT=3000
 ENV NODE_ENV=production
 
-ENV YARN_VERSION 3.4.1
+ENV YARN_VERSION 1.22.19
 
 ARG URL=http://moodle-grades-master-backend:8090
 ENV REWRITE_URL=$URL
@@ -12,10 +12,11 @@ ENV REWRITE_URL=$URL
 ADD . /app
 WORKDIR /app
 
-RUN yarn policies set-version $YARN_VERSION 
-RUN yarn install
-# RUN yarn policies set-version $YARN_VERSION \
-#     && yarn install --ignore-engines
+RUN apk update && apk add nodejs npm \
+    && npm install -g yarn \
+    && yarn policies set-version $YARN_VERSION \
+    && yarn add nuxt \ 
+    && yarn install
 
 # Build
 FROM base as build
