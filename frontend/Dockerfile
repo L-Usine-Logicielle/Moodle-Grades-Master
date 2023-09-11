@@ -1,5 +1,5 @@
 # Set up
-FROM alpine:3.18 as base
+FROM alpine:3.18
 
 ARG PORT=3000
 ENV NODE_ENV=production
@@ -19,15 +19,11 @@ RUN apk update && apk add nodejs npm \
     && yarn install
 
 # Build
-FROM base as build
-
 RUN yarn build
 
 # Run
-FROM base
-
 ENV PORT=$PORT
 
-COPY --from=build /app/.output /app/.output
+COPY /app/.output /app/.output
 
 CMD [ "node", ".output/server/index.mjs" ]
